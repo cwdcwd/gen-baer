@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import type { GeneratedTheme } from "@/lib/theme-schema"
 import { RefreshCw, Palette, ChevronUp, ChevronDown } from "lucide-react"
 
@@ -12,11 +12,13 @@ export function ThemeBadge({ theme }: ThemeBadgeProps) {
   const [isExpanded, setIsExpanded] = useState(false)
   const [isRegenerating, setIsRegenerating] = useState(false)
   const [regenResult, setRegenResult] = useState<string | null>(null)
+  const [isAdmin, setIsAdmin] = useState(false)
 
-  // Check for admin mode via URL
-  const isAdmin =
-    typeof window !== "undefined" &&
-    new URLSearchParams(window.location.search).get("admin") === "true"
+  // Check for admin mode via URL - must use useEffect to avoid hydration mismatch
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    setIsAdmin(params.get("admin") === "true")
+  }, [])
 
   async function handleRegenerate(themeName?: string) {
     setIsRegenerating(true)
@@ -47,12 +49,10 @@ export function ThemeBadge({ theme }: ThemeBadgeProps) {
     }
   }
 
-  const generatedDate = new Date(theme.generatedAt).toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-    hour: "numeric",
-    minute: "2-digit",
-  })
+  // Format date in UTC to avoid hydration mismatch between server/client timezones
+  const d = new Date(theme.generatedAt)
+  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+  const generatedDate = `${months[d.getUTCMonth()]} ${d.getUTCDate()}, ${d.getUTCFullYear()}`
 
   return (
     <div

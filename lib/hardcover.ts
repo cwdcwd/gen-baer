@@ -71,17 +71,18 @@ export async function fetchReadingList(): Promise<HardcoverBook[]> {
   if (cached) return cached
 
   try {
-    const headers: Record<string, string> = {
-      "Content-Type": "application/json",
-    }
-
-    if (process.env.HARDCOVER_API_TOKEN) {
-      headers["Authorization"] = `Bearer ${process.env.HARDCOVER_API_TOKEN}`
+    const apiToken = process.env.HARDCOVER_API_TOKEN
+    if (!apiToken) {
+      // Without a Hardcover API token, use fallback books
+      return getFallbackBooks()
     }
 
     const response = await fetch(HARDCOVER_API_URL, {
       method: "POST",
-      headers,
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": apiToken,
+      },
       body: JSON.stringify({
         query: QUERY,
         variables: { username: HARDCOVER_USERNAME },

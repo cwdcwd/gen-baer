@@ -6,13 +6,10 @@ interface FooterProps {
 }
 
 export function SiteFooter({ theme, variant }: FooterProps) {
-  const generatedDate = new Date(theme.generatedAt).toLocaleDateString("en-US", {
-    month: "long",
-    day: "numeric",
-    year: "numeric",
-    hour: "numeric",
-    minute: "2-digit",
-  })
+  // Format date in UTC to avoid hydration mismatch between server/client timezones
+  const d = new Date(theme.generatedAt)
+  const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+  const generatedDate = `${months[d.getUTCMonth()]} ${d.getUTCDate()}, ${d.getUTCFullYear()}`
 
   if (variant === "terminal") {
     return (
