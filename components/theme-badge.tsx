@@ -127,7 +127,7 @@ export function ThemeBadge({ theme }: ThemeBadgeProps) {
         <Palette className="h-3 w-3" style={{ color: "var(--theme-accent)" }} />
         <span>{theme.themeName}</span>
         <span style={{ color: "var(--theme-border)" }}>&middot;</span>
-        <span>{generatedDate}</span>
+        <span suppressHydrationWarning>{generatedDate}</span>
         {isExpanded ? (
           <ChevronDown className="h-3 w-3" />
         ) : (
