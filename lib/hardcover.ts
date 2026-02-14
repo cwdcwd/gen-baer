@@ -90,14 +90,14 @@ export async function fetchReadingList(): Promise<HardcoverBook[]> {
     })
 
     if (!response.ok) {
-      console.error("[v0] Hardcover API error:", response.status)
+      // API returned an error, fall back gracefully
       return getFallbackBooks()
     }
 
     const json = (await response.json()) as HardcoverResponse
 
     if (!json.data?.users?.[0]?.user_books) {
-      console.error("[v0] No user_books found in Hardcover response")
+      // No user data in response
       return getFallbackBooks()
     }
 
@@ -114,7 +114,7 @@ export async function fetchReadingList(): Promise<HardcoverBook[]> {
 
     return books
   } catch (error) {
-    console.error("[v0] Failed to fetch Hardcover reading list:", error)
+    // Fetch failed, use fallback
     return getFallbackBooks()
   }
 }
