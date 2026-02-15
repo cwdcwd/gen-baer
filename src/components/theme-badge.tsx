@@ -12,10 +12,7 @@ interface AvailableTheme {
   slug: string
   name: string
   generatedAt: string
-  colors: {
-    background: string
-    accent: string
-  }
+  colors: string[]
   layoutVariant: string
 }
 
@@ -181,7 +178,7 @@ export function ThemeBadge({ theme }: ThemeBadgeProps) {
             </div>
           )}
           {availableThemes.map((t) => {
-            const isCurrentTheme = t.slug === theme.slug
+            const isCurrentTheme = t.slug === theme.themeSlug
             return (
               <button
                 key={t.slug}

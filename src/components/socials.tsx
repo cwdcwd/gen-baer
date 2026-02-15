@@ -117,7 +117,9 @@ export function Socials({ theme, variant, socials }: SocialsProps) {
                 rel="noopener noreferrer"
                 className="group flex items-center gap-3 transition-opacity hover:opacity-70"
               >
-                <Icon className="h-4 w-4" style={{ color: "var(--theme-fg-muted)" }} />
+                <span style={{ color: "var(--theme-fg-muted)" }}>
+                  <Icon className="h-4 w-4" />
+                </span>
                 <span className="text-sm font-medium" style={{ color: "var(--theme-fg)" }}>
                   {social.platform}
                 </span>
@@ -155,7 +157,9 @@ export function Socials({ theme, variant, socials }: SocialsProps) {
                   border: `1px solid var(--theme-border)`,
                 }}
               >
-                <Icon className="h-6 w-6" style={{ color: "var(--theme-accent)" }} />
+                <span style={{ color: "var(--theme-accent)" }}>
+                  <Icon className="h-6 w-6" />
+                </span>
                 <span className="text-sm font-medium" style={{ color: "var(--theme-fg)" }}>
                   {social.platform}
                 </span>
@@ -188,7 +192,9 @@ export function Socials({ theme, variant, socials }: SocialsProps) {
               className="theme-animate flex items-center gap-2 transition-opacity hover:opacity-70"
               style={{ animationDelay: `${i * 0.1}s` }}
             >
-              <Icon className="h-5 w-5" style={{ color: "var(--theme-accent)" }} />
+              <span style={{ color: "var(--theme-accent)" }}>
+                <Icon className="h-5 w-5" />
+              </span>
               <span className="text-sm font-medium" style={{ color: "var(--theme-fg)" }}>
                 {social.platform}
               </span>
