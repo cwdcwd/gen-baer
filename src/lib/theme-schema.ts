@@ -1,4 +1,10 @@
 import { z } from "zod"
+import {
+  LAYOUT_VARIANT,
+  ANIMATION_STYLE,
+  AI_CONFIG,
+  ALLOWED_DECORATIVE_CSS_PROPERTIES,
+} from "./constants"
 
 export const themeSchema = z.object({
   themeName: z.string().describe("Display name of the theme, e.g. '80s New Wave'"),
@@ -41,10 +47,20 @@ export const themeSchema = z.object({
   ).describe("Each project's name and description rewritten in the theme's voice"),
 
   style: z.object({
-    layoutVariant: z.enum(["classic", "brutalist", "cards", "terminal", "magazine"]).describe("Which layout variant to use"),
+    layoutVariant: z.enum([
+      LAYOUT_VARIANT.CLASSIC,
+      LAYOUT_VARIANT.BRUTALIST,
+      LAYOUT_VARIANT.CARDS,
+      LAYOUT_VARIANT.TERMINAL,
+      LAYOUT_VARIANT.MAGAZINE,
+    ]).describe("Which layout variant to use"),
     borderRadius: z.string().describe("CSS border-radius value, e.g. '0px' for brutalist, '16px' for soft"),
-    decorativeCSS: z.string().describe("A CSS snippet for theme-specific decorative effects. Only use background, box-shadow, text-shadow, border, and filter properties. No JavaScript. Max 500 chars."),
-    animationStyle: z.enum(["none", "subtle", "energetic"]).describe("Animation intensity level"),
+    decorativeCSS: z.string().describe(`A CSS snippet for theme-specific decorative effects. Only use ${ALLOWED_DECORATIVE_CSS_PROPERTIES.join(", ")} properties. No JavaScript. Max ${AI_CONFIG.MAX_DECORATIVE_CSS_LENGTH} chars.`),
+    animationStyle: z.enum([
+      ANIMATION_STYLE.NONE,
+      ANIMATION_STYLE.SUBTLE,
+      ANIMATION_STYLE.ENERGETIC,
+    ]).describe("Animation intensity level"),
   }),
 })
 
@@ -82,9 +98,9 @@ export const fallbackTheme: GeneratedTheme = {
   },
   projectDescriptions: [],
   style: {
-    layoutVariant: "terminal",
+    layoutVariant: LAYOUT_VARIANT.TERMINAL,
     borderRadius: "2px",
     decorativeCSS: "background-image: radial-gradient(ellipse at 20% 50%, rgba(0,240,255,0.03) 0%, transparent 50%), radial-gradient(ellipse at 80% 20%, rgba(255,42,109,0.03) 0%, transparent 50%); box-shadow: inset 0 0 120px rgba(0,240,255,0.02);",
-    animationStyle: "energetic",
+    animationStyle: ANIMATION_STYLE.ENERGETIC,
   },
 }

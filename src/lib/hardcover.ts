@@ -1,13 +1,20 @@
 import { getCachedBooks, setCachedBooks } from "./redis"
-
-const HARDCOVER_API_URL = "https://api.hardcover.app/v1/graphql"
-const HARDCOVER_USERNAME = "lazybaer"
+import {
+  HARDCOVER_CONFIG,
+  HARDCOVER_STATUS_MAP,
+  HARDCOVER_STATUS_IDS,
+  BOOK_STATUS,
+  BookStatus,
+  ENV_KEYS,
+  CONTENT_TYPE,
+  HTTP_HEADERS,
+} from "./constants"
 
 export interface HardcoverBook {
   title: string
   author: string
   coverUrl: string | null
-  status: "currently-reading" | "read" | "want-to-read"
+  status: BookStatus
   rating: number | null
 }
 
@@ -32,20 +39,14 @@ interface HardcoverResponse {
   }
 }
 
-const STATUS_MAP: Record<number, HardcoverBook["status"]> = {
-  1: "want-to-read",
-  2: "currently-reading",
-  3: "read",
-}
-
 const QUERY = `
   query GetUserBooks($username: citext!) {
     users(where: { username: { _eq: $username } }) {
       id
       user_books(
-        where: { status_id: { _in: [1, 2, 3] } }
+        where: { status_id: { _in: [${HARDCOVER_STATUS_IDS.WANT_TO_READ}, ${HARDCOVER_STATUS_IDS.CURRENTLY_READING}, ${HARDCOVER_STATUS_IDS.READ}] } }
         order_by: { updated_at: desc }
-        limit: 20
+        limit: ${HARDCOVER_CONFIG.MAX_BOOKS_FETCH}
       ) {
         status_id
         rating
@@ -71,21 +72,21 @@ export async function fetchReadingList(): Promise<HardcoverBook[]> {
   if (cached) return cached
 
   try {
-    const apiToken = process.env.HARDCOVER_API_TOKEN
+    const apiToken = process.env[ENV_KEYS.HARDCOVER_API_TOKEN]
     if (!apiToken) {
       // Without a Hardcover API token, use fallback books
       return getFallbackBooks()
     }
 
-    const response = await fetch(HARDCOVER_API_URL, {
+    const response = await fetch(HARDCOVER_CONFIG.API_URL, {
       method: "POST",
       headers: {
-        "Content-Type": "application/json",
-        "Authorization": apiToken,
+        [HTTP_HEADERS.CONTENT_TYPE]: CONTENT_TYPE.JSON,
+        [HTTP_HEADERS.AUTHORIZATION_CAPS]: apiToken,
       },
       body: JSON.stringify({
         query: QUERY,
-        variables: { username: HARDCOVER_USERNAME },
+        variables: { username: HARDCOVER_CONFIG.DEFAULT_USERNAME },
       }),
     })
 
@@ -105,7 +106,7 @@ export async function fetchReadingList(): Promise<HardcoverBook[]> {
       title: ub.book.title,
       author: ub.book.contributions?.[0]?.author?.name ?? "Unknown Author",
       coverUrl: ub.book.image?.url ?? null,
-      status: STATUS_MAP[ub.status_id] ?? "want-to-read",
+      status: HARDCOVER_STATUS_MAP[ub.status_id] ?? BOOK_STATUS.WANT_TO_READ,
       rating: ub.rating,
     }))
 
@@ -121,11 +122,11 @@ export async function fetchReadingList(): Promise<HardcoverBook[]> {
 
 function getFallbackBooks(): HardcoverBook[] {
   return [
-    { title: "Neuromancer", author: "William Gibson", coverUrl: null, status: "currently-reading", rating: null },
-    { title: "Snow Crash", author: "Neal Stephenson", coverUrl: null, status: "read", rating: 5 },
-    { title: "Dune", author: "Frank Herbert", coverUrl: null, status: "read", rating: 5 },
-    { title: "The Left Hand of Darkness", author: "Ursula K. Le Guin", coverUrl: null, status: "read", rating: 4 },
-    { title: "Hyperion", author: "Dan Simmons", coverUrl: null, status: "want-to-read", rating: null },
-    { title: "The Three-Body Problem", author: "Liu Cixin", coverUrl: null, status: "want-to-read", rating: null },
+    { title: "Neuromancer", author: "William Gibson", coverUrl: null, status: BOOK_STATUS.CURRENTLY_READING, rating: null },
+    { title: "Snow Crash", author: "Neal Stephenson", coverUrl: null, status: BOOK_STATUS.READ, rating: 5 },
+    { title: "Dune", author: "Frank Herbert", coverUrl: null, status: BOOK_STATUS.READ, rating: 5 },
+    { title: "The Left Hand of Darkness", author: "Ursula K. Le Guin", coverUrl: null, status: BOOK_STATUS.READ, rating: 4 },
+    { title: "Hyperion", author: "Dan Simmons", coverUrl: null, status: BOOK_STATUS.WANT_TO_READ, rating: null },
+    { title: "The Three-Body Problem", author: "Liu Cixin", coverUrl: null, status: BOOK_STATUS.WANT_TO_READ, rating: null },
   ]
 }
