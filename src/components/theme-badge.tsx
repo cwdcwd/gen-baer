@@ -2,10 +2,21 @@
 
 import { useState, useEffect } from "react"
 import type { GeneratedTheme } from "@/lib/theme-schema"
-import { RefreshCw, Palette, ChevronUp, ChevronDown } from "lucide-react"
+import { RefreshCw, Palette, ChevronUp, ChevronDown, Check } from "lucide-react"
 
 interface ThemeBadgeProps {
   theme: GeneratedTheme
+}
+
+interface AvailableTheme {
+  slug: string
+  name: string
+  generatedAt: string
+  colors: {
+    background: string
+    accent: string
+  }
+  layoutVariant: string
 }
 
 export function ThemeBadge({ theme }: ThemeBadgeProps) {
@@ -13,12 +24,43 @@ export function ThemeBadge({ theme }: ThemeBadgeProps) {
   const [isRegenerating, setIsRegenerating] = useState(false)
   const [regenResult, setRegenResult] = useState<string | null>(null)
   const [isAdmin, setIsAdmin] = useState(false)
+  const [availableThemes, setAvailableThemes] = useState<AvailableTheme[]>([])
+  const [isLoadingThemes, setIsLoadingThemes] = useState(false)
 
-  // Check for admin mode via URL - must use useEffect to avoid hydration mismatch
+  // Check for admin mode via URL
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
     setIsAdmin(params.get("admin") === "true")
   }, [])
+
+  // Load available themes when expanded
+  useEffect(() => {
+    if (isExpanded && availableThemes.length === 0) {
+      loadAvailableThemes()
+    }
+  }, [isExpanded])
+
+  async function loadAvailableThemes() {
+    setIsLoadingThemes(true)
+    try {
+      const res = await fetch("/api/themes")
+      const data = await res.json()
+      if (res.ok) {
+        setAvailableThemes(data.themes || [])
+      }
+    } catch {
+      // Silent fail
+    } finally {
+      setIsLoadingThemes(false)
+    }
+  }
+
+  async function switchTheme(slug: string) {
+    // Set cookie to persist selection
+    document.cookie = `selected-theme=${slug}; path=/; max-age=31536000`
+    // Reload to apply theme
+    window.location.reload()
+  }
 
   async function handleRegenerate(themeName?: string) {
     setIsRegenerating(true)
@@ -37,7 +79,9 @@ export function ThemeBadge({ theme }: ThemeBadgeProps) {
       const data = await res.json()
       if (res.ok) {
         setRegenResult(`Generated: ${data.theme}`)
-        // Reload after a moment to see the new theme
+        // Reload available themes
+        await loadAvailableThemes()
+        // Reload page after a moment
         setTimeout(() => window.location.reload(), 1500)
       } else {
         setRegenResult(`Error: ${data.error}`)
@@ -73,6 +117,7 @@ export function ThemeBadge({ theme }: ThemeBadgeProps) {
         </div>
       )}
 
+      {/* Admin controls - regeneration */}
       {isExpanded && isAdmin && (
         <div
           className="flex flex-col gap-2 p-3"
@@ -82,6 +127,9 @@ export function ThemeBadge({ theme }: ThemeBadgeProps) {
             borderRadius: "var(--theme-radius)",
           }}
         >
+          <div className="mb-1 text-xs font-semibold" style={{ color: "var(--theme-accent)" }}>
+            Admin: Regenerate
+          </div>
           <button
             onClick={() => handleRegenerate()}
             disabled={isRegenerating}
@@ -114,6 +162,59 @@ export function ThemeBadge({ theme }: ThemeBadgeProps) {
         </div>
       )}
 
+      {/* User theme picker - switch between cached themes */}
+      {isExpanded && !isAdmin && (
+        <div
+          className="flex max-h-96 flex-col gap-2 overflow-y-auto p-3"
+          style={{
+            backgroundColor: "var(--theme-bg-secondary)",
+            border: `1px solid var(--theme-border)`,
+            borderRadius: "var(--theme-radius)",
+          }}
+        >
+          <div className="mb-1 text-xs font-semibold" style={{ color: "var(--theme-accent)" }}>
+            {isLoadingThemes ? "Loading themes..." : "Switch Theme"}
+          </div>
+          {!isLoadingThemes && availableThemes.length === 0 && (
+            <div className="px-3 py-2 text-xs" style={{ color: "var(--theme-fg-muted)" }}>
+              No themes available
+            </div>
+          )}
+          {availableThemes.map((t) => {
+            const isCurrentTheme = t.slug === theme.slug
+            return (
+              <button
+                key={t.slug}
+                onClick={() => !isCurrentTheme && switchTheme(t.slug)}
+                disabled={isCurrentTheme}
+                className="flex flex-col gap-1 px-3 py-2 text-left text-xs transition-opacity hover:opacity-80 disabled:opacity-50"
+                style={{
+                  backgroundColor: isCurrentTheme ? "var(--theme-accent)" : "transparent",
+                  color: isCurrentTheme ? "var(--theme-bg)" : "var(--theme-fg-muted)",
+                  borderRadius: "var(--theme-radius)",
+                  border: isCurrentTheme ? "none" : `1px solid var(--theme-border)`,
+                }}
+              >
+                <div className="flex items-center gap-2">
+                  <span className="font-semibold">{t.name}</span>
+                  {isCurrentTheme && <span className="text-[10px]">(active)</span>}
+                </div>
+                <div className="flex gap-1">
+                  {t.colors.slice(0, 5).map((color, idx) => (
+                    <div
+                      key={idx}
+                      className="h-2 w-2 rounded-full"
+                      style={{ backgroundColor: color }}
+                    />
+                  ))}
+                </div>
+              </button>
+            )
+          })}
+        </div>
+      )}
+
+      {/* Main toggle button */}
       <button
         onClick={() => setIsExpanded(!isExpanded)}
         className="flex items-center gap-2 px-3 py-2 text-xs shadow-lg backdrop-blur-sm transition-opacity hover:opacity-90"

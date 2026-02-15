@@ -23,14 +23,18 @@ export const AI_CONFIG = {
 // ============================================================================
 
 export const REDIS_KEYS = {
-  /** Current active theme */
-  THEME: "current-theme",
+  /** Prefix for individual theme storage: theme:{slug} */
+  THEME_PREFIX: "theme:",
+  /** Default/fallback theme slug */
+  DEFAULT_THEME_SLUG: "default",
   /** Theme rotation index */
   ROTATION_INDEX: "theme-rotation-index",
   /** Total visitor count */
   VISITOR_COUNT: "visitor-count",
   /** Cached reading list from Hardcover */
   BOOKS_CACHE: "hardcover-books-cache",
+  /** List of available theme slugs */
+  AVAILABLE_THEMES: "available-themes",
 } as const
 
 export const CACHE_CONFIG = {

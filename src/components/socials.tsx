@@ -1,3 +1,5 @@
+"use client"
+
 import type { GeneratedTheme } from "@/lib/theme-schema"
 import type { resumeData } from "@/lib/resume-data"
 import { Github, Twitter, Linkedin, BookOpen, ExternalLink } from "lucide-react"

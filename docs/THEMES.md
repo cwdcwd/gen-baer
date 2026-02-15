@@ -19,7 +19,50 @@ User/Cron → API Endpoint → OpenAI GPT-4 → Zod Validation → Redis Storage
 5. **Storage**: Saves to Redis as the "current theme"
 6. **Application**: Next.js page fetches and applies the theme
 
-### 2. Theme Components
+### 2. Multi-Theme Caching System
+
+Gen-Baer now supports multiple pre-generated themes that users can switch between without admin access.
+
+#### Storage Architecture
+
+- **Individual Theme Storage**: Each theme is stored in Redis with a unique slug key pattern: `theme:vaporwave`, `theme:cyberpunk-noir`, etc.
+- **Available Themes Set**: A Redis set (`available-themes`) tracks all cached theme slugs
+- **User Preference**: Cookie-based selection (`selected-theme`) remembers user's choice
+
+#### User Experience
+
+**Regular Users:**
+- Click the theme badge in the bottom-right corner
+- View all available pre-cached themes with color previews
+- Switch between themes instantly (page reload applies new theme)
+- Selection persists via browser cookie
+
+**Admin Users:**
+- Access admin panel with `?admin=true` URL parameter + `ADMIN_SECRET`
+- Regenerate individual themes or generate random new ones
+- New themes are automatically added to the available themes cache
+
+#### API Endpoints
+
+**GET /api/themes** (Public)
+- Lists all available cached themes
+- Returns simplified metadata: slug, name, generatedAt, colors, layoutVariant
+- No authentication required
+
+**POST /api/regen** (Admin only)
+- Regenerates a specific theme or creates a random one
+- Requires `Authorization: Bearer <ADMIN_SECRET>` header
+- Updates the cache with the new theme
+
+#### Implementation Flow
+
+```
+User opens site → Cookie checked → Load theme:slug from Redis → Apply theme
+User switches theme → Set cookie → Reload page → Load new theme
+Admin regenerates → Generate new theme → Store in Redis → Update available set
+```
+
+### 3. Theme Components
 
 #### Colors
 

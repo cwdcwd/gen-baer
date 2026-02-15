@@ -10,7 +10,7 @@ const DEFAULT_THEMES = [
   "art deco gatsby",
   "lo-fi hip hop",
   "swiss design minimalism",
-  "psychedelic 60s",
+  "adams family. Edgar Allan Poe, spooky, dark, and mysterious.",
   "film noir detective",
 ]
 
