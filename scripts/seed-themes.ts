@@ -8,7 +8,7 @@ import { getThemeList } from "../src/lib/themes-config"
 const API_URL = process.argv[2] || process.env.NEXT_PUBLIC_URL || "http://localhost:3000"
 const ADMIN_SECRET = process.argv[3] || process.env.ADMIN_SECRET || ""
 
-async function generateTheme(theme: string): Promise<{ success: boolean; slug?: string; error?: string }> {
+async function generateTheme(theme: string): Promise<{ success: boolean; name?: string; error?: string }> {
   try {
     const response = await fetch(`${API_URL}/api/generate-theme`, {
       method: "POST",
@@ -21,10 +21,10 @@ async function generateTheme(theme: string): Promise<{ success: boolean; slug?: 
 
     const data = await response.json()
     
-    if (response.ok && data.slug) {
-      return { success: true, slug: data.slug }
+    if (response.ok && data.success) {
+      return { success: true, name: data.theme }
     } else {
-      return { success: false, error: data.error || "Unknown error" }
+      return { success: false, error: data.error || `HTTP ${response.status}` }
     }
   } catch (error) {
     return { success: false, error: error instanceof Error ? error.message : "Network error" }
@@ -66,7 +66,7 @@ async function main() {
     const result = await generateTheme(theme)
     
     if (result.success) {
-      console.log(`✅ ${result.slug}`)
+      console.log(`✅ ${result.name}`)
       results.success++
     } else {
       console.log(`❌ ${result.error}`)
