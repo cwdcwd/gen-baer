@@ -263,17 +263,24 @@ Components install to `src/components/ui/` automatically due to path aliases.
 
 ### Hardcover API
 
-Hardcover integration is hardcoded to username `lazybaer` in [src/lib/hardcover.ts](../src/lib/hardcover.ts):
+Hardcover integration uses the username `lazybaer` by default, configured in [src/lib/constants.ts](../src/lib/constants.ts):
 
 ```typescript
-const HARDCOVER_USERNAME = "lazybaer"  // Change this!
+export const HARDCOVER_CONFIG = {
+  // ...
+  DEFAULT_USERNAME: "lazybaer",  // Change this to your username!
+  // ...
+}
 ```
 
 **To use your own reading list:**
 1. Create account at [Hardcover](https://hardcover.app/)
 2. Add books to your shelves
-3. Update `HARDCOVER_USERNAME` in code
-4. No API key needed (public GraphQL endpoint)
+3. Update `DEFAULT_USERNAME` in [src/lib/constants.ts](../src/lib/constants.ts) to your Hardcover username
+4. Redeploy or restart your development server
+5. No API key needed (public GraphQL endpoint)
+
+> **Note:** An optional `HARDCOVER_API_TOKEN` environment variable can be set if you need higher rate limits or want to access private data. For most use cases, the public API works without authentication.
 
 **Disable Reading List:**
 If you don't want the reading list feature:

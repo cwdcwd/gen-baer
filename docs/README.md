@@ -51,7 +51,7 @@ Welcome to the Gen-Baer documentation! This guide will help you understand, conf
 → Edit [vercel.json](../vercel.json) - [Details](CONFIGURATION.md#verceljson)
 
 **Use my own reading list?**
-→ Update `HARDCOVER_USERNAME` in [src/lib/hardcover.ts](../src/lib/hardcover.ts)
+→ Update `DEFAULT_USERNAME` in [src/lib/constants.ts](../src/lib/constants.ts)
 
 **Disable the reading list feature?**
 → See [Configuration Guide](CONFIGURATION.md#reading-list-integration)

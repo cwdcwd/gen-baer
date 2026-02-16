@@ -73,17 +73,21 @@ export async function fetchReadingList(): Promise<HardcoverBook[]> {
 
   try {
     const apiToken = process.env[ENV_KEYS.HARDCOVER_API_TOKEN]
-    if (!apiToken) {
-      // Without a Hardcover API token, use fallback books
-      return getFallbackBooks()
+    
+    // Build headers - API token is optional for public data
+    const headers: Record<string, string> = {
+      [HTTP_HEADERS.CONTENT_TYPE]: CONTENT_TYPE.JSON,
+    }
+    
+    // Include authorization header if token is provided
+    // Hardcover requires "Bearer " prefix for JWT tokens
+    if (apiToken) {
+      headers[HTTP_HEADERS.AUTHORIZATION_CAPS] = `Bearer ${apiToken}`
     }
 
     const response = await fetch(HARDCOVER_CONFIG.API_URL, {
       method: "POST",
-      headers: {
-        [HTTP_HEADERS.CONTENT_TYPE]: CONTENT_TYPE.JSON,
-        [HTTP_HEADERS.AUTHORIZATION_CAPS]: apiToken,
-      },
+      headers,
       body: JSON.stringify({
         query: QUERY,
         variables: { username: HARDCOVER_CONFIG.DEFAULT_USERNAME },
@@ -91,15 +95,15 @@ export async function fetchReadingList(): Promise<HardcoverBook[]> {
     })
 
     if (!response.ok) {
-      // API returned an error, fall back gracefully
-      return getFallbackBooks()
+      // API returned an error, return empty list
+      return []
     }
 
     const json = (await response.json()) as HardcoverResponse
 
     if (!json.data?.users?.[0]?.user_books) {
       // No user data in response
-      return getFallbackBooks()
+      return []
     }
 
     const books: HardcoverBook[] = json.data.users[0].user_books.map((ub) => ({
@@ -115,18 +119,8 @@ export async function fetchReadingList(): Promise<HardcoverBook[]> {
 
     return books
   } catch (error) {
-    // Fetch failed, use fallback
-    return getFallbackBooks()
+    console.error('[Hardcover] Error fetching reading list:', error)
+    // Fetch failed, return empty list
+    return []
   }
-}
-
-function getFallbackBooks(): HardcoverBook[] {
-  return [
-    { title: "Neuromancer", author: "William Gibson", coverUrl: null, status: BOOK_STATUS.CURRENTLY_READING, rating: null },
-    { title: "Snow Crash", author: "Neal Stephenson", coverUrl: null, status: BOOK_STATUS.READ, rating: 5 },
-    { title: "Dune", author: "Frank Herbert", coverUrl: null, status: BOOK_STATUS.READ, rating: 5 },
-    { title: "The Left Hand of Darkness", author: "Ursula K. Le Guin", coverUrl: null, status: BOOK_STATUS.READ, rating: 4 },
-    { title: "Hyperion", author: "Dan Simmons", coverUrl: null, status: BOOK_STATUS.WANT_TO_READ, rating: null },
-    { title: "The Three-Body Problem", author: "Liu Cixin", coverUrl: null, status: BOOK_STATUS.WANT_TO_READ, rating: null },
-  ]
 }

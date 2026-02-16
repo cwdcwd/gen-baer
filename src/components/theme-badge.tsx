@@ -97,9 +97,31 @@ export function ThemeBadge({ theme }: ThemeBadgeProps) {
 
   return (
     <div
-      className="fixed bottom-4 right-4 z-50 flex flex-col items-end gap-2"
+      className="fixed top-4 right-4 z-50 flex flex-col items-end gap-2"
       style={{ fontFamily: "var(--theme-mono-font)" }}
     >
+      {/* Main toggle button */}
+      <button
+        onClick={() => setIsExpanded(!isExpanded)}
+        className="flex items-center gap-2 px-3 py-2 text-xs shadow-lg backdrop-blur-sm transition-opacity hover:opacity-90"
+        style={{
+          backgroundColor: "var(--theme-bg-secondary)",
+          color: "var(--theme-fg-muted)",
+          border: `1px solid var(--theme-border)`,
+          borderRadius: "var(--theme-radius)",
+        }}
+      >
+        <Palette className="h-3 w-3" style={{ color: "var(--theme-accent)" }} />
+        <span>{theme.themeName}</span>
+        <span style={{ color: "var(--theme-border)" }}>&middot;</span>
+        <span suppressHydrationWarning>{generatedDate}</span>
+        {isExpanded ? (
+          <ChevronUp className="h-3 w-3" />
+        ) : (
+          <ChevronDown className="h-3 w-3" />
+        )}
+      </button>
+
       {regenResult && (
         <div
           className="px-3 py-2 text-xs"
@@ -210,28 +232,6 @@ export function ThemeBadge({ theme }: ThemeBadgeProps) {
           })}
         </div>
       )}
-
-      {/* Main toggle button */}
-      <button
-        onClick={() => setIsExpanded(!isExpanded)}
-        className="flex items-center gap-2 px-3 py-2 text-xs shadow-lg backdrop-blur-sm transition-opacity hover:opacity-90"
-        style={{
-          backgroundColor: "var(--theme-bg-secondary)",
-          color: "var(--theme-fg-muted)",
-          border: `1px solid var(--theme-border)`,
-          borderRadius: "var(--theme-radius)",
-        }}
-      >
-        <Palette className="h-3 w-3" style={{ color: "var(--theme-accent)" }} />
-        <span>{theme.themeName}</span>
-        <span style={{ color: "var(--theme-border)" }}>&middot;</span>
-        <span suppressHydrationWarning>{generatedDate}</span>
-        {isExpanded ? (
-          <ChevronDown className="h-3 w-3" />
-        ) : (
-          <ChevronUp className="h-3 w-3" />
-        )}
-      </button>
     </div>
   )
 }
