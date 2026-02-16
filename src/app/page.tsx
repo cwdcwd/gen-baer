@@ -10,6 +10,7 @@ import { ReadingList } from "@/components/reading-list"
 import { Socials } from "@/components/socials"
 import { SiteFooter } from "@/components/site-footer"
 import { ThemeBadge } from "@/components/theme-badge"
+import { AdminControl } from "@/components/admin-control"
 import { cookies } from "next/headers"
 
 export const dynamic = "force-dynamic"
@@ -82,6 +83,7 @@ export default async function Page() {
         <SiteFooter theme={currentTheme} variant={variant} />
       </main>
       <ThemeBadge theme={currentTheme} />
+      <AdminControl />
     </>
   )
 }

@@ -13,6 +13,10 @@ const nextConfig = {
         protocol: "https",
         hostname: "assets.hardcover.app",
       },
+      {
+        protocol: "https",
+        hostname: "s.gravatar.com",
+      },
     ],
   },
 }
