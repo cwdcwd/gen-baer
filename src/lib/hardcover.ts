@@ -16,6 +16,7 @@ export interface HardcoverBook {
   coverUrl: string | null
   status: BookStatus
   rating: number | null
+  lastReadDate: string | null
 }
 
 interface HardcoverResponse {
@@ -25,6 +26,10 @@ interface HardcoverResponse {
       user_books: Array<{
         status_id: number
         rating: number | null
+        last_read_date: string | null
+        edition: {
+          image: { url: string } | null
+        } | null
         book: {
           title: string
           image: { url: string } | null
@@ -50,6 +55,12 @@ const QUERY = `
       ) {
         status_id
         rating
+        last_read_date
+        edition {
+          image {
+            url
+          }
+        }
         book {
           title
           image {
@@ -109,9 +120,10 @@ export async function fetchReadingList(): Promise<HardcoverBook[]> {
     const books: HardcoverBook[] = json.data.users[0].user_books.map((ub) => ({
       title: ub.book.title,
       author: ub.book.contributions?.[0]?.author?.name ?? "Unknown Author",
-      coverUrl: ub.book.image?.url ?? null,
+      coverUrl: ub.edition?.image?.url ?? ub.book.image?.url ?? null,
       status: HARDCOVER_STATUS_MAP[ub.status_id] ?? BOOK_STATUS.WANT_TO_READ,
       rating: ub.rating,
+      lastReadDate: ub.last_read_date,
     }))
 
     // Cache the results

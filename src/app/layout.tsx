@@ -1,10 +1,10 @@
 import type { Metadata, Viewport } from "next"
+import { resumeData } from "@/lib/resume-data"
 import "./globals.css"
 
 export const metadata: Metadata = {
-  title: "Alex Chen | Portfolio",
-  description:
-    "Full-stack developer and creative technologist. A dynamically themed portfolio that regenerates its entire design via AI every day.",
+  title: `${resumeData.name} | Portfolio`,
+  description: resumeData.tagline,
 }
 
 export const viewport: Viewport = {

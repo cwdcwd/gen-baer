@@ -61,4 +61,12 @@ export async function setCachedBooks<T>(books: T): Promise<void> {
   await redis.set(REDIS_KEYS.BOOKS_CACHE, books, { ex: CACHE_CONFIG.BOOKS_TTL })
 }
 
+export async function clearBooksCache(): Promise<void> {
+  await redis.del(REDIS_KEYS.BOOKS_CACHE)
+}
+
+export async function clearThemesCache(): Promise<void> {
+  await redis.del(REDIS_KEYS.AVAILABLE_THEMES)
+}
+
 export default redis

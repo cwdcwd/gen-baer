@@ -39,7 +39,15 @@ function BookCover({ book }: { book: HardcoverBook }) {
 
 export function ReadingList({ theme, variant, books }: ReadingListProps) {
   const currentlyReading = books.filter((b) => b.status === "currently-reading")
-  const read = books.filter((b) => b.status === "read")
+  const read = books
+    .filter((b) => b.status === "read")
+    .sort((a, b) => {
+      // Sort by lastReadDate descending (most recent first)
+      if (!a.lastReadDate && !b.lastReadDate) return 0
+      if (!a.lastReadDate) return 1
+      if (!b.lastReadDate) return -1
+      return new Date(b.lastReadDate).getTime() - new Date(a.lastReadDate).getTime()
+    })
   const wantToRead = books.filter((b) => b.status === "want-to-read")
 
   const groupedBooks = [

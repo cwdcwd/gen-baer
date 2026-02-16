@@ -40,6 +40,10 @@ export const REDIS_KEYS = {
 export const CACHE_CONFIG = {
   /** Cache TTL for books in seconds (1 hour) */
   BOOKS_TTL: 3600,
+  /** Books cache key */
+  BOOKS_CACHE: REDIS_KEYS.BOOKS_CACHE,
+  /** Themes cache key */
+  THEMES_CACHE: REDIS_KEYS.AVAILABLE_THEMES,
 } as const
 
 // ============================================================================
@@ -52,7 +56,7 @@ export const HARDCOVER_CONFIG = {
   /** Default username for reading list */
   DEFAULT_USERNAME: "lazybaer",
   /** Maximum books to fetch from API */
-  MAX_BOOKS_FETCH: 20,
+  MAX_BOOKS_FETCH: 50,
   /** Maximum books to display on site */
   MAX_BOOKS_DISPLAY: 10,
 } as const

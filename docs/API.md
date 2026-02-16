@@ -176,6 +176,60 @@ curl -X POST https://your-domain.com/api/regen \
 
 ---
 
+### DELETE `/api/cache/clear`
+
+Clears cached data from Redis (themes and/or books).
+
+#### Authentication
+
+Requires:
+- `?secret={CACHE_CLEAR_SECRET}` - Query parameter
+
+#### Query Parameters
+
+- `key` - (Optional) What to clear: `"books"`, `"themes"`, or `"all"` (default: `"all"`)
+- `secret` - (Required) Authentication secret
+
+#### Response
+
+**Success (200)**
+```json
+{
+  "success": true,
+  "cleared": ["books", "themes"],
+  "message": "Successfully cleared books, themes cache"
+}
+```
+
+**Error Responses**
+
+```json
+// 401 Unauthorized
+{
+  "error": "Unauthorized - invalid or missing secret"
+}
+
+// 500 Internal Server Error
+{
+  "error": "Failed to clear cache"
+}
+```
+
+#### Example Requests
+
+```bash
+# Clear all caches
+curl -X DELETE "https://your-domain.com/api/cache/clear?secret=YOUR_CACHE_CLEAR_SECRET"
+
+# Clear only books cache
+curl -X DELETE "https://your-domain.com/api/cache/clear?key=books&secret=YOUR_CACHE_CLEAR_SECRET"
+
+# Clear only themes cache
+curl -X DELETE "https://your-domain.com/api/cache/clear?key=themes&secret=YOUR_CACHE_CLEAR_SECRET"
+```
+
+---
+
 ## Rate Limits
 
 - Theme generation uses OpenAI GPT-4, which has rate limits based on your OpenAI account tier
