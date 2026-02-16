@@ -69,4 +69,11 @@ export async function clearThemesCache(): Promise<void> {
   await redis.del(REDIS_KEYS.AVAILABLE_THEMES)
 }
 
+export async function deleteTheme(slug: string): Promise<void> {
+  // Remove from available themes set
+  await redis.srem(REDIS_KEYS.AVAILABLE_THEMES, slug)
+  // Delete the theme key
+  await redis.del(`${REDIS_KEYS.THEME_PREFIX}${slug}`)
+}
+
 export default redis

@@ -10,7 +10,7 @@ const ADMIN_SECRET = process.argv[3] || process.env.ADMIN_SECRET || ""
 
 async function generateTheme(theme: string): Promise<{ success: boolean; name?: string; error?: string }> {
   try {
-    const response = await fetch(`${API_URL}/api/generate-theme`, {
+    const response = await fetch(`${API_URL}/api/theme`, {
       method: "POST",
       headers: {
         "Authorization": `Bearer ${ADMIN_SECRET}`,

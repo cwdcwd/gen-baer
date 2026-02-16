@@ -6,7 +6,7 @@ Gen-Baer exposes API endpoints for theme generation and management. All endpoint
 
 ## Endpoints
 
-### POST `/api/generate-theme`
+### POST `/api/theme`
 
 Generates a new theme using AI and stores it in Redis.
 
@@ -30,22 +30,8 @@ Requires one of:
 ```json
 {
   "success": true,
-  "theme": {
-    "themeSlug": "vaporwave",
-    "colors": {
-      "background": "#1a0b2e",
-      "foreground": "#ff6ec7",
-      "accent": "#00ffff",
-      "muted": "#8b5cf6",
-      "border": "#ff00ff"
-    },
-    "typography": {
-      "headingFont": "Orbitron",
-      "bodyFont": "Roboto"
-    },
-    // ... full theme object
-  },
-  "generatedAt": "2026-02-14T12:00:00.000Z"
+  "theme": "vaporwave",
+  "layoutVariant": "cards"
 }
 ```
 
@@ -66,7 +52,7 @@ Requires one of:
 #### Example Request
 
 ```bash
-curl -X POST https://your-domain.com/api/generate-theme \
+curl -X POST https://your-domain.com/api/theme \
   -H "Authorization: Bearer YOUR_ADMIN_SECRET" \
   -H "Content-Type: application/json" \
   -d '{"theme": "cyberpunk noir"}'
@@ -74,9 +60,9 @@ curl -X POST https://your-domain.com/api/generate-theme \
 
 ---
 
-### POST `/api/regen`
+### PATCH `/api/theme`
 
-Regenerates the current theme with fresh content while keeping the same theme aesthetic.
+Regenerates the current theme with fresh content. Functionally identical to POST, but semantically represents an update/regeneration.
 
 #### Authentication
 
@@ -86,8 +72,40 @@ Requires:
 #### Request Body
 
 ```json
-{}  // Empty body
+{
+  "theme": "vaporwave"  // Optional: specify a theme to regenerate
+}
 ```
+
+#### Response
+
+Same as POST `/api/theme`
+
+#### Example Request
+
+```bash
+curl -X PATCH https://your-domain.com/api/theme \
+  -H "Authorization: Bearer YOUR_ADMIN_SECRET" \
+  -H "Content-Type: application/json" \
+  -d '{"theme": "cyberpunk noir"}'
+```
+
+---
+
+### DELETE `/api/theme`
+
+Deletes a specific theme from the cache.
+
+#### Authentication
+
+Requires:
+- `Authorization: Bearer {ADMIN_SECRET}`
+
+#### Request Parameters
+
+You can provide the theme slug in either:
+- **Query parameter**: `?slug=theme-name`
+- **Request body**: `{"slug": "theme-name"}`
 
 #### Response
 
@@ -95,37 +113,56 @@ Requires:
 ```json
 {
   "success": true,
-  "message": "Theme regenerated successfully",
-  "theme": {
-    // ... new theme object
-  }
+  "message": "Theme \"vaporwave\" deleted successfully"
 }
 ```
 
 **Error Responses**
 
 ```json
+// 400 Bad Request - missing slug
+{
+  "error": "Theme slug is required"
+}
+
 // 401 Unauthorized
 {
   "error": "Unauthorized"
 }
 
-// 404 Not Found
-{
-  "error": "No current theme found"
-}
-
 // 500 Internal Server Error
 {
-  "error": "Failed to regenerate theme"
+  "error": "Failed to delete theme"
 }
 ```
 
-#### Example Request
+#### Example Requests
 
 ```bash
-curl -X POST https://your-domain.com/api/regen \
+# Using query parameter
+curl -X DELETE "https://your-domain.com/api/theme?slug=vaporwave" \
   -H "Authorization: Bearer YOUR_ADMIN_SECRET"
+
+# Using request body
+curl -X DELETE https://your-domain.com/api/theme \
+  -H "Authorization: Bearer YOUR_ADMIN_SECRET" \
+  -H "Content-Type: application/json" \
+  -d '{"slug": "vaporwave"}'
+```
+
+---
+
+### GET `/api/themes`
+
+Returns a list of all available theme slugs.
+
+#### Response
+
+**Success (200)**
+```json
+{
+  "themes": ["vaporwave", "cyberpunk", "brutalist", "cottagecore"]
+}
 ```
 
 ---
@@ -248,7 +285,7 @@ curl -X DELETE "https://your-domain.com/api/cache/clear?key=themes&secret=YOUR_C
 
 Currently, Gen-Baer does not emit webhooks. To be notified of theme changes, you can:
 - Poll the home page periodically
-- Add webhook support by modifying the `/api/generate-theme` route
+- Add webhook support by modifying the `/api/theme` route
 - Use Vercel's deployment hooks with scheduled functions
 
 ## Error Handling
@@ -263,7 +300,7 @@ Include error handling in your integration:
 
 ```javascript
 try {
-  const response = await fetch('/api/generate-theme', {
+  const response = await fetch('/api/theme', {
     method: 'POST',
     headers: {
       'Authorization': `Bearer ${process.env.ADMIN_SECRET}`,

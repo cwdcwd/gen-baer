@@ -49,10 +49,20 @@ Gen-Baer now supports multiple pre-generated themes that users can switch betwee
 - Returns simplified metadata: slug, name, generatedAt, colors, layoutVariant
 - No authentication required
 
-**POST /api/regen** (Admin only)
-- Regenerates a specific theme or creates a random one
+**POST /api/theme** (Admin only)
+- Creates a new theme
+- Requires `Authorization: Bearer <ADMIN_SECRET>` header
+- Stores the theme in cache
+
+**PATCH /api/theme** (Admin only)
+- Regenerates the current theme
 - Requires `Authorization: Bearer <ADMIN_SECRET>` header
 - Updates the cache with the new theme
+
+**DELETE /api/theme** (Admin only)
+- Deletes a specific theme from the cache
+- Requires `Authorization: Bearer <ADMIN_SECRET>` header
+- Accepts theme slug via query parameter or request body
 
 #### Implementation Flow
 
@@ -242,7 +252,7 @@ export const themeSchema = z.object({
 
 ### Adjust AI Prompt
 
-Edit [src/app/api/generate-theme/route.ts](../src/app/api/generate-theme/route.ts) to modify how themes are generated:
+Edit [src/app/api/theme/route.ts](../src/app/api/theme/route.ts) to modify how themes are generated:
 
 ```typescript
 const result = await generateText({
@@ -282,7 +292,7 @@ Want to preview themes before deploying?
 
 1. Generate locally:
 ```bash
-curl -X POST http://localhost:3000/api/generate-theme \
+curl -X POST http://localhost:3000/api/theme \
   -H "Authorization: Bearer YOUR_ADMIN_SECRET" \
   -d '{"theme": "test theme"}'
 ```

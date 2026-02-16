@@ -64,8 +64,8 @@ export function ThemeBadge({ theme }: ThemeBadgeProps) {
     setRegenResult(null)
 
     try {
-      const res = await fetch("/api/regen", {
-        method: "POST",
+      const res = await fetch("/api/theme", {
+        method: "PATCH",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${prompt("Enter admin secret:") || ""}`,

@@ -44,4 +44,4 @@ pnpm seed-themes https://your-site.vercel.app your-secret-here
 - Generates themes from `DEFAULT_THEMES` in `src/lib/themes-config.ts`
 - Takes ~20-30 seconds (2s delay between generations to avoid rate limits)
 - Existing themes will be regenerated
-- Uses the `/api/generate-theme` endpoint which calls OpenAI
+- Uses the `/api/theme` endpoint which calls OpenAI

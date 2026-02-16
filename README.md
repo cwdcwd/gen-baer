@@ -54,7 +54,7 @@ pnpm dev
 Trigger a theme generation manually:
 
 ```bash
-curl -X POST http://localhost:3000/api/generate-theme \
+curl -X POST http://localhost:3000/api/theme \
   -H "Authorization: Bearer YOUR_ADMIN_SECRET" \
   -H "Content-Type: application/json" \
   -d '{"theme": "vaporwave"}'
@@ -111,7 +111,7 @@ You can customize the theme rotation by updating [src/lib/themes-config.ts](src/
 Generate a specific theme:
 
 ```bash
-curl -X POST https://your-domain.com/api/generate-theme \
+curl -X POST https://your-domain.com/api/theme \
   -H "Authorization: Bearer YOUR_ADMIN_SECRET" \
   -H "Content-Type: application/json" \
   -d '{"theme": "cyberpunk noir"}'
@@ -128,8 +128,9 @@ gen-baer/
 ├── src/
 │   ├── app/                    # Next.js app router
 │   │   ├── api/                # API routes
-│   │   │   ├── generate-theme/ # Theme generation endpoint
-│   │   │   └── regen/          # Theme regeneration endpoint
+│   │   │   ├── theme/          # Theme generation/regeneration endpoint
+│   │   │   ├── themes/         # Theme list endpoint
+│   │   │   └── cache/          # Cache management endpoint
 │   │   ├── layout.tsx          # Root layout
 │   │   └── page.tsx            # Home page
 │   ├── components/             # React components
@@ -154,7 +155,7 @@ gen-baer/
 
 ## 🎨 How It Works
 
-1. **Theme Generation**: The `/api/generate-theme` endpoint uses GPT-4 to generate a complete theme, including:
+1. **Theme Generation**: The `/api/theme` endpoint uses GPT-4 to generate a complete theme, including:
    - Color palette (background, foreground, accents)
    - Typography choices (Google Fonts)
    - Rewritten copy in the theme's voice

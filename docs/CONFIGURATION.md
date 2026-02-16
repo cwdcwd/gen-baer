@@ -184,7 +184,7 @@ These are overridden dynamically by the theme system via inline styles.
 {
   "crons": [
     {
-      "path": "/api/generate-theme",
+      "path": "/api/theme",
       "schedule": "0 6 * * *"  // Daily at 6 AM UTC
     }
   ]
@@ -293,7 +293,7 @@ const books = await fetchReadingList().catch(() => [])
 <ReadingList books={books} theme={currentTheme} variant={variant} />
 ```
 
-2. Update AI prompt in [src/app/api/generate-theme/route.ts](../src/app/api/generate-theme/route.ts) to remove book context
+2. Update AI prompt in [src/app/api/theme/route.ts](../src/app/api/theme/route.ts) to remove book context
 
 ## Personal Data Configuration
 
@@ -401,7 +401,7 @@ export async function incrementVisitorCount(): Promise<number> {
 Switch to a different OpenAI model or provider:
 
 ```typescript
-// In src/app/api/generate-theme/route.ts
+// In src/app/api/theme/route.ts
 const result = await generateText({
   model: "openai/gpt-4-turbo",  // or gpt-3.5-turbo for cost savings
   // model: "anthropic/claude-3-sonnet",  // Anthropic Claude

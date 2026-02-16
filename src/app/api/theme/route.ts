@@ -1,6 +1,6 @@
 import { generateText, Output } from "ai"
 import { themeSchema } from "@/lib/theme-schema"
-import { setTheme } from "@/lib/redis"
+import { setTheme, deleteTheme } from "@/lib/redis"
 import { fetchReadingList } from "@/lib/hardcover"
 import { resumeData } from "@/lib/resume-data"
 import { getNextTheme, getFeatureFlags } from "@/lib/themes-config"
@@ -20,7 +20,7 @@ import {
 // Next.js route segment config requires literal values
 export const maxDuration = 60
 
-export async function POST(req: Request) {
+async function generateTheme(req: Request) {
   // Authenticate: cron secret or admin secret
   const authHeader = req.headers.get(HTTP_HEADERS.AUTHORIZATION)
   const cronSecret = process.env[ENV_KEYS.CRON_SECRET]
@@ -132,6 +132,16 @@ BE BOLD. BE CREATIVE. FULLY COMMIT TO THE THEME.`,
   }
 }
 
+// POST to create/generate a new theme
+export async function POST(req: Request) {
+  return generateTheme(req)
+}
+
+// PATCH to regenerate/update the current theme
+export async function PATCH(req: Request) {
+  return generateTheme(req)
+}
+
 // Support GET for Vercel Cron
 export async function GET(req: Request) {
   const authHeader = req.headers.get(HTTP_HEADERS.AUTHORIZATION)
@@ -152,4 +162,54 @@ export async function GET(req: Request) {
   })
 
   return POST(fakeReq)
+}
+
+export async function DELETE(req: Request) {
+  const adminSecret = process.env[ENV_KEYS.ADMIN_SECRET]
+
+  if (!adminSecret) {
+    return Response.json(
+      { [API_RESPONSE_FIELDS.ERROR]: ERROR_MESSAGES.ADMIN_SECRET_NOT_CONFIGURED },
+      { status: HTTP_STATUS.INTERNAL_SERVER_ERROR }
+    )
+  }
+
+  const authHeader = req.headers.get(HTTP_HEADERS.AUTHORIZATION)
+  if (authHeader !== `${AUTH_SCHEME.BEARER_PREFIX}${adminSecret}`) {
+    return Response.json(
+      { [API_RESPONSE_FIELDS.ERROR]: ERROR_MESSAGES.UNAUTHORIZED },
+      { status: HTTP_STATUS.UNAUTHORIZED }
+    )
+  }
+
+  try {
+    // Get theme slug from query params or request body
+    const url = new URL(req.url)
+    let themeSlug = url.searchParams.get("slug")
+    
+    if (!themeSlug) {
+      const body = await req.json().catch(() => ({}))
+      themeSlug = body.slug
+    }
+
+    if (!themeSlug) {
+      return Response.json(
+        { [API_RESPONSE_FIELDS.ERROR]: "Theme slug is required" },
+        { status: HTTP_STATUS.BAD_REQUEST }
+      )
+    }
+
+    await deleteTheme(themeSlug)
+
+    return Response.json({
+      success: true,
+      message: `Theme "${themeSlug}" deleted successfully`,
+    })
+  } catch (error) {
+    console.error("Error deleting theme:", error)
+    return Response.json(
+      { [API_RESPONSE_FIELDS.ERROR]: "Failed to delete theme" },
+      { status: HTTP_STATUS.INTERNAL_SERVER_ERROR }
+    )
+  }
 }

@@ -25,8 +25,8 @@ Welcome to the Gen-Baer documentation! This guide will help you understand, conf
 3. [Customizing Layouts](THEMES.md#layout-variants)
 
 ### API Usage
-1. [Generate Theme Endpoint](API.md#post-apigenerate-theme)
-2. [Regenerate Theme Endpoint](API.md#post-apiregen)
+1. [Generate Theme Endpoint](API.md#post-apitheme)
+2. [Regenerate Theme Endpoint](API.md#patch-apitheme)
 3. [Authentication](API.md#authentication)
 
 ### Advanced Topics
@@ -45,7 +45,7 @@ Welcome to the Gen-Baer documentation! This guide will help you understand, conf
 → See [Adding Themes](THEMES.md#add-to-default-rotation)
 
 **Generate a theme manually?**
-→ See [API Documentation](API.md#post-apigenerate-theme)
+→ See [API Documentation](API.md#post-apitheme)
 
 **Change the cron schedule?**
 → Edit [vercel.json](../vercel.json) - [Details](CONFIGURATION.md#verceljson)
@@ -75,8 +75,9 @@ Deep dive into how themes work:
 
 ### [API Reference (API.md)](API.md)
 Complete API documentation:
-- POST `/api/generate-theme` - Generate new theme
-- POST `/api/regen` - Regenerate current theme
+- POST `/api/theme` - Generate new theme
+- PATCH `/api/theme` - Regenerate current theme
+- DELETE `/api/theme` - Delete a specific theme
 - Authentication methods
 - Request/response formats
 - Error handling
@@ -97,8 +98,9 @@ gen-baer/
 ├── src/
 │   ├── app/                     # Next.js App Router
 │   │   ├── api/                 # API endpoints
-│   │   │   ├── generate-theme/  # Theme generation
-│   │   │   └── regen/           # Theme regeneration
+│   │   │   ├── theme/           # Theme generation & regeneration
+│   │   │   ├── themes/          # Theme list
+│   │   │   └── cache/           # Cache management
 │   │   ├── layout.tsx           # Root layout
 │   │   ├── page.tsx             # Main page
 │   │   └── globals.css          # Global styles
@@ -158,7 +160,7 @@ gen-baer/
 
 ```typescript
 // Manual theme generation
-const response = await fetch('/api/generate-theme', {
+const response = await fetch('/api/theme', {
   method: 'POST',
   headers: {
     'Authorization': `Bearer ${process.env.ADMIN_SECRET}`,
