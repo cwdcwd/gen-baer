@@ -76,35 +76,40 @@ Admin regenerates → Generate new theme → Store in Redis → Update available
 
 #### Colors
 
-Each theme includes 5 core colors:
+Each theme includes 7 colors:
 - **Background**: Main page background
+- **Background Secondary**: Cards and section backgrounds
 - **Foreground**: Primary text color
-- **Accent**: Highlights, links, interactive elements
-- **Muted**: Secondary text, borders
+- **Foreground Muted**: Secondary text, less prominent elements
+- **Accent**: Primary highlights, links, interactive elements
+- **Accent Secondary**: Secondary accent for variation
 - **Border**: Dividers and card borders
 
 Colors are applied via CSS variables for easy theming:
 
 ```css
 :root {
-  --background: 26 11 46;  /* HSL values */
-  --foreground: 333 100 71;
+  --background: 10 10 18;  /* HSL values */
+  --background-secondary: 18 18 31;
+  --foreground: 224 224 255;
+  --foreground-muted: 122 122 158;
   --accent: 180 100 50;
-  --muted: 258 61 65;
-  --border: 300 100 50;
+  --accent-secondary: 338 100 59;
+  --border: 30 30 58;
 }
 ```
 
 #### Typography
 
-Two Google Fonts per theme:
+Three Google Fonts per theme:
 - **Heading Font**: Display text, hero, section titles
 - **Body Font**: Paragraphs, descriptions, UI text
+- **Mono Font**: Code blocks, terminal-style text
 
 Fonts are loaded via Next.js font optimization:
 
 ```typescript
-import { Orbitron, Roboto } from 'next/font/google'
+import { Orbitron, Roboto, ShareTechMono } from 'next/font/google'
 ```
 
 #### Layout Variants
@@ -138,15 +143,15 @@ Only these properties are allowed for security:
 #### Animation Style
 
 Three animation modes:
-- **Energetic**: Fast, bouncy animations for high-energy themes
-- **Subtle**: Gentle, smooth transitions for elegant themes
 - **None**: No animations for minimal themes
+- **Subtle**: Gentle, smooth transitions for elegant themes
+- **Energetic**: Fast, bouncy animations for high-energy themes
 
 ### 3. Copy Transformation
 
 The AI rewrites ALL text in the theme's voice:
 
-**Original:**
+**Original Bio:**
 > I'm a full-stack developer with a passion for building products...
 
 **Vaporwave Theme:**
@@ -154,6 +159,15 @@ The AI rewrites ALL text in the theme's voice:
 
 **Film Noir Theme:**
 > The city's full of developers. I'm the one you hire when the code gets dirty...
+
+The copy structure includes:
+- **Site Title**: Page title rewritten in theme voice
+- **Hero Headline**: Main headline in theme voice
+- **Hero Subtext**: Supporting text below headline
+- **Bio Text**: Your bio completely rewritten (2-3 paragraphs)
+- **Section Titles**: Themed headings for projects, reading, socials
+- **Footer Text**: Footer message in theme voice
+- **Project Descriptions**: Each project name and description rewritten
 
 ## Creating New Themes
 
@@ -210,40 +224,45 @@ The full Zod schema is in [src/lib/theme-schema.ts](../src/lib/theme-schema.ts):
 
 ```typescript
 export const themeSchema = z.object({
+  themeName: z.string(),
   themeSlug: z.string(),
   generatedAt: z.string(),
   colors: z.object({
     background: z.string(),
+    backgroundSecondary: z.string(),
     foreground: z.string(),
+    foregroundMuted: z.string(),
     accent: z.string(),
-    muted: z.string(),
+    accentSecondary: z.string(),
     border: z.string(),
   }),
   typography: z.object({
     headingFont: z.string(),
     bodyFont: z.string(),
-    headingWeight: z.number().min(100).max(900),
-    bodyWeight: z.number().min(100).max(900),
-  }),
-  style: z.object({
-    borderRadius: z.number().min(0).max(32),
-    layoutVariant: z.enum(["classic", "brutalist", "cards", "terminal", "magazine"]),
-    decorativeCSS: z.string().max(500),
-    animationStyle: z.enum(["energetic", "subtle", "none"]),
+    monoFont: z.string(),
   }),
   copy: z.object({
-    hero: z.object({
-      name: z.string(),
-      tagline: z.string(),
-    }),
-    bio: z.string(),
-    projects: z.array(
-      z.object({
-        name: z.string(),
-        description: z.string(),
-      })
-    ),
-    footer: z.string(),
+    siteTitle: z.string(),
+    heroHeadline: z.string(),
+    heroSubtext: z.string(),
+    bioText: z.string(),
+    projectsSectionTitle: z.string(),
+    readingSectionTitle: z.string(),
+    socialsSectionTitle: z.string(),
+    footerText: z.string(),
+  }),
+  projectDescriptions: z.array(
+    z.object({
+      originalName: z.string(),
+      themedName: z.string(),
+      themedDescription: z.string(),
+    })
+  ),
+  style: z.object({
+    layoutVariant: z.enum(["classic", "brutalist", "cards", "terminal", "magazine"]),
+    borderRadius: z.string(),
+    decorativeCSS: z.string().max(500),
+    animationStyle: z.enum(["none", "subtle", "energetic"]),
   }),
 })
 ```
@@ -274,10 +293,12 @@ If theme generation fails or Redis is unavailable, a fallback theme is used from
 
 ```typescript
 export const fallbackTheme: GeneratedTheme = {
-  themeSlug: "default",
+  themeName: "Cyberpunk Noir",
+  themeSlug: "cyberpunk-noir",
   colors: {
-    background: "#ffffff",
-    foreground: "#0a0a0a",
+    background: "#0a0a12",
+    backgroundSecondary: "#12121f",
+    foreground: "#e0e0ff",
     // ...
   },
   // ...

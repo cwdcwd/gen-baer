@@ -18,8 +18,9 @@ OPENAI_API_KEY=sk-proj-xxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
 **Cost Estimates:**
 - Each theme generation uses ~2,000-4,000 tokens (input + output)
-- At $0.01/1K tokens (GPT-4), expect ~$0.02-0.04 per theme
-- Daily generation = ~$0.60-1.20/month
+- GPT-4o pricing: ~$0.01-0.02 per theme
+- Daily generation = ~$0.30-0.60/month
+- Check [OpenAI Pricing](https://openai.com/api/pricing/) for current rates
 
 #### Upstash Redis Configuration
 
@@ -63,6 +64,18 @@ node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 **Usage:**
 - `CRON_SECRET`: Used by Vercel Cron to authenticate scheduled jobs
 - `ADMIN_SECRET`: Used for manual API calls (theme generation, regeneration)
+
+#### Cache Clear Secret
+
+```bash
+CACHE_CLEAR_SECRET=generate-with-openssl-rand-hex-32
+```
+
+**Setup:**
+Same as above - generate a secure random string.
+
+**Usage:**
+- `CACHE_CLEAR_SECRET`: Used to authenticate cache clearing via the `/api/cache/clear` endpoint
 
 ### Optional Variables
 
@@ -109,6 +122,14 @@ const nextConfig = {
       {
         protocol: "https",
         hostname: "**.hardcover.app",  // For reading list covers
+      },
+      {
+        protocol: "https",
+        hostname: "assets.hardcover.app",  // For reading list assets
+      },
+      {
+        protocol: "https",
+        hostname: "s.gravatar.com",  // For Gravatar avatars
       },
     ],
   },
@@ -392,7 +413,7 @@ export async function incrementVisitorCount(): Promise<number> {
 ```
 
 **To enable:**
-1. Call in [src/middleware.ts](../src/middleware.ts) or page
+1. Call in [src/proxy.ts](../src/proxy.ts) or page
 2. Display in footer or analytics dashboard
 3. Consider privacy implications and compliance (GDPR, etc.)
 
@@ -403,7 +424,7 @@ Switch to a different OpenAI model or provider:
 ```typescript
 // In src/app/api/theme/route.ts
 const result = await generateText({
-  model: "openai/gpt-4-turbo",  // or gpt-3.5-turbo for cost savings
+  model: "openai/gpt-4o",  // Current default, or gpt-4-turbo/gpt-3.5-turbo for cost savings
   // model: "anthropic/claude-3-sonnet",  // Anthropic Claude
   output: Output.object({ schema: themeSchema }),
   prompt: `...`,

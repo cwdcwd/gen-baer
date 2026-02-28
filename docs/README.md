@@ -125,7 +125,7 @@ gen-baer/
 │   │   └── utils.ts             # General utilities
 │   │
 │   ├── hooks/                   # Custom React hooks
-│   └── middleware.ts            # Next.js middleware
+│   └── proxy.ts                 # Next.js proxy (middleware)
 │
 ├── docs/                        # Documentation (you are here!)
 │   ├── README.md               # Documentation index
@@ -196,7 +196,7 @@ export function CustomSection({ theme, variant }: CustomSectionProps) {
       <h2 style={{ fontFamily: theme.typography.headingFont }}>
         Custom Section
       </h2>
-      <p>{theme.copy.bio}</p>
+      <p>{theme.copy.bioText}</p>
     </section>
   )
 }

@@ -30,10 +30,12 @@ Requires one of:
 ```json
 {
   "success": true,
-  "theme": "vaporwave",
+  "theme": "Vaporwave",
   "layoutVariant": "cards"
 }
 ```
+
+**Note:** The `theme` field returns the display name (e.g., "Vaporwave"), not the slug.
 
 **Error Responses**
 
@@ -154,16 +156,36 @@ curl -X DELETE https://your-domain.com/api/theme \
 
 ### GET `/api/themes`
 
-Returns a list of all available theme slugs.
+Returns a list of all available cached themes with their metadata.
+
+#### Authentication
+
+None required - this is a public endpoint.
 
 #### Response
 
 **Success (200)**
 ```json
 {
-  "themes": ["vaporwave", "cyberpunk", "brutalist", "cottagecore"]
+  "themes": [
+    {
+      "slug": "vaporwave",
+      "name": "Vaporwave",
+      "generatedAt": "2026-02-28T12:00:00.000Z",
+      "colors": [
+        "#1a0b2e",
+        "#e0e0ff",
+        "#00f0ff",
+        "#ff2a6d",
+        "#1e1e3a"
+      ],
+      "layoutVariant": "cards"
+    }
+  ]
 }
 ```
+
+The colors array contains: `[background, foreground, accent, accentSecondary, border]`
 
 ---
 
@@ -171,42 +193,48 @@ Returns a list of all available theme slugs.
 
 ```typescript
 {
-  themeSlug: string            // URL-friendly theme identifier
+  themeName: string            // Display name, e.g. "Cyberpunk Noir"
+  themeSlug: string            // URL-friendly slug, e.g. "cyberpunk-noir"
   generatedAt: string          // ISO 8601 timestamp
   
   colors: {
-    background: string         // Hex color
-    foreground: string         // Hex color
-    accent: string            // Hex color
-    muted: string             // Hex color
-    border: string            // Hex color
+    background: string         // Primary background as hex
+    backgroundSecondary: string // Secondary background for cards/sections as hex
+    foreground: string         // Primary text color as hex
+    foregroundMuted: string    // Muted/secondary text color as hex
+    accent: string            // Primary accent color as hex
+    accentSecondary: string   // Secondary accent color as hex
+    border: string            // Border color as hex
   }
   
   typography: {
-    headingFont: string       // Google Font name
-    bodyFont: string          // Google Font name
-    headingWeight: number     // 400-900
-    bodyWeight: number        // 400-700
-  }
-  
-  style: {
-    borderRadius: number      // 0-32 (px)
-    layoutVariant: string     // "classic" | "brutalist" | "cards" | "terminal" | "magazine"
-    decorativeCSS: string     // Custom CSS for theme-specific styling
-    animationStyle: string    // "energetic" | "subtle" | "none"
+    headingFont: string       // Google Font name for headings
+    bodyFont: string          // Google Font name for body text
+    monoFont: string          // Google Font name for monospace text
   }
   
   copy: {
-    hero: {
-      name: string
-      tagline: string
-    }
-    bio: string
-    projects: Array<{
-      name: string
-      description: string
-    }>
-    footer: string
+    siteTitle: string         // Site title in theme's voice
+    heroHeadline: string      // Hero headline in theme's voice
+    heroSubtext: string       // Hero subtext in theme's voice
+    bioText: string           // Bio rewritten in theme's voice (2-3 paragraphs)
+    projectsSectionTitle: string // Themed section heading for projects
+    readingSectionTitle: string  // Themed section heading for reading list
+    socialsSectionTitle: string  // Themed section heading for socials
+    footerText: string        // Footer line in theme's voice
+  }
+  
+  projectDescriptions: Array<{
+    originalName: string      // Original project name to match against
+    themedName: string        // Project name in theme's voice
+    themedDescription: string // Project description in theme's voice
+  }>
+  
+  style: {
+    layoutVariant: string     // "classic" | "brutalist" | "cards" | "terminal" | "magazine"
+    borderRadius: string      // CSS value, e.g. "0px", "16px"
+    decorativeCSS: string     // Custom CSS for theme-specific styling (max 500 chars)
+    animationStyle: string    // "none" | "subtle" | "energetic"
   }
 }
 ```

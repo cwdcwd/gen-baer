@@ -77,6 +77,8 @@ curl -X POST http://localhost:3000/api/theme \
 | Variable | Description |
 |----------|-------------|
 | `EDGE_CONFIG` | Vercel Edge Config connection string for dynamic theme lists |
+| `CACHE_CLEAR_SECRET` | Secret for authenticating cache clearing endpoint |
+| `HARDCOVER_API_TOKEN` | Optional token for higher Hardcover API rate limits |
 
 See [.env.example](.env.example) for a complete template.
 
