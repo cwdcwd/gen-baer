@@ -20,18 +20,20 @@ export default async function Page() {
   const cookieStore = await cookies()
   const selectedThemeSlug = cookieStore.get("selected-theme")?.value
   
-  // Get available themes for the picker
+  // Get available themes
   const availableSlugs = await getAvailableThemes().catch(() => [])
   
-  // Load selected theme or first available theme
+  // Load selected theme if set, otherwise pick a random one
   let theme = null
   if (selectedThemeSlug) {
     theme = await getTheme(selectedThemeSlug).catch(() => null)
   }
   
-  // If no theme selected or not found, try first available
+  // If no theme selected or not found, pick a random one
   if (!theme && availableSlugs.length > 0) {
-    theme = await getTheme(availableSlugs[0]).catch(() => null)
+    const randomIndex = Math.floor(Math.random() * availableSlugs.length)
+    const randomSlug = availableSlugs[randomIndex]
+    theme = await getTheme(randomSlug).catch(() => null)
   }
   
   const [currentTheme, books] = await Promise.all([

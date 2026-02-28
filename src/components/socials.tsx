@@ -69,22 +69,7 @@ export function Socials({ theme, variant, socials }: SocialsProps) {
                 href={social.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group flex items-center gap-2 border-2 px-4 py-3 font-bold uppercase transition-colors"
-                style={{
-                  borderColor: "var(--theme-fg)",
-                  color: "var(--theme-fg)",
-                  backgroundColor: "transparent",
-                }}
-                onMouseEnter={(e) => {
-                  const el = e.currentTarget
-                  el.style.backgroundColor = "var(--theme-fg)"
-                  el.style.color = "var(--theme-bg)"
-                }}
-                onMouseLeave={(e) => {
-                  const el = e.currentTarget
-                  el.style.backgroundColor = "transparent"
-                  el.style.color = "var(--theme-fg)"
-                }}
+                className="brutalist-social-link group flex items-center gap-2 border-2 px-4 py-3 font-bold uppercase transition-colors"
               >
                 <Icon className="h-5 w-5" />
                 {social.platform}

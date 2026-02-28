@@ -83,3 +83,14 @@ html {
 ::-webkit-scrollbar-thumb:hover {
   background: var(--theme-fg-muted);
 }
+
+/* Brutalist social links hover effect */
+.brutalist-social-link {
+  border-color: var(--theme-fg);
+  color: var(--theme-fg);
+  background-color: transparent;
+}
+.brutalist-social-link:hover {
+  background-color: var(--theme-fg);
+  color: var(--theme-bg);
+}
