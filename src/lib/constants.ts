@@ -25,8 +25,8 @@ export const AI_CONFIG = {
 export const IMAGE_CONFIG = {
   /** DALL-E model to use */
   DALLE_MODEL: "dall-e-3" as const,
-  /** Image size for generation */
-  IMAGE_SIZE: "1792x1024" as const,
+  /** Image size for generation (1024x1024 square for consistent display) */
+  IMAGE_SIZE: "1024x1024" as const,
   /** Image quality */
   IMAGE_QUALITY: "standard" as const,
   /** Whether background image generation is enabled */

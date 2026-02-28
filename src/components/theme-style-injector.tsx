@@ -151,14 +151,14 @@ export function ThemeStyleInjector({ theme }: { theme: GeneratedTheme }) {
       position: absolute;
       inset: 0;
       background-size: cover;
-      background-position: center;
+      background-position: center bottom;
       background-repeat: no-repeat;
       opacity: 0;
       transition: opacity 1.5s ease-in-out;
     }
     
     .theme-bg-image.loaded {
-      opacity: 0.5;
+      opacity: 0.4;
     }
     
     .theme-bg-overlay {
@@ -166,10 +166,9 @@ export function ThemeStyleInjector({ theme }: { theme: GeneratedTheme }) {
       inset: 0;
       background: linear-gradient(
         to bottom,
-        ${theme.colors.background}99 0%,
-        ${theme.colors.background}80 30%,
-        ${theme.colors.background}80 70%,
-        ${theme.colors.background}99 100%
+        ${theme.colors.background}dd 0%,
+        ${theme.colors.background}aa 40%,
+        ${theme.colors.background}66 100%
       );
     }
     
