@@ -62,9 +62,26 @@ export const themeSchema = z.object({
       ANIMATION_STYLE.ENERGETIC,
     ]).describe("Animation intensity level"),
   }),
+
+  // Background image prompt - used to generate the background image after theme creation
+  backgroundImagePrompt: z.string().describe("A detailed DALL-E prompt to generate a background image that matches this theme. Should describe visual elements, mood, colors, and style. 100-200 words. The image will be used as a subtle full-page background, so it should work well faded/translucent."),
 })
 
-export type GeneratedTheme = z.infer<typeof themeSchema>
+// Separate schema for background image data (populated after image generation)
+export const backgroundImageSchema = z.object({
+  url: z.string().describe("Vercel Blob URL of the generated background image"),
+  blurDataUrl: z.string().describe("Base64-encoded tiny blur placeholder"),
+  svgPattern: z.string().describe("SVG data URL for fallback pattern"),
+  prompt: z.string().describe("The prompt used to generate the image"),
+  generatedAt: z.string().describe("ISO 8601 timestamp"),
+}).nullable()
+
+export type BackgroundImage = z.infer<typeof backgroundImageSchema>
+
+// Full theme with optional background image
+export type GeneratedTheme = z.infer<typeof themeSchema> & {
+  backgroundImage?: BackgroundImage
+}
 
 // Default fallback theme used when Redis is empty and AI hasn't generated yet
 // Uses a fixed timestamp to avoid hydration mismatch between server and client
@@ -103,4 +120,6 @@ export const fallbackTheme: GeneratedTheme = {
     decorativeCSS: "background-image: radial-gradient(ellipse at 20% 50%, rgba(0,240,255,0.03) 0%, transparent 50%), radial-gradient(ellipse at 80% 20%, rgba(255,42,109,0.03) 0%, transparent 50%); box-shadow: inset 0 0 120px rgba(0,240,255,0.02);",
     animationStyle: ANIMATION_STYLE.ENERGETIC,
   },
+  backgroundImagePrompt: "A dark cyberpunk cityscape at night, neon signs glowing in cyan and magenta, rain-slicked streets reflecting light, towering skyscrapers with holographic advertisements, slight fog and atmospheric haze, noir aesthetic with high contrast shadows, digital glitch effects subtly overlaid, moody and mysterious atmosphere perfect for a portfolio background",
+  backgroundImage: null,
 }

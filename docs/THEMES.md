@@ -147,6 +147,31 @@ Three animation modes:
 - **Subtle**: Gentle, smooth transitions for elegant themes
 - **Energetic**: Fast, bouncy animations for high-energy themes
 
+#### Background Images
+
+Each theme can have an AI-generated background image:
+
+**How it works:**
+1. The AI generates a DALL-E prompt describing the perfect background for the theme
+2. DALL-E 3 creates a unique image matching that aesthetic
+3. The image is stored in Vercel Blob for fast CDN delivery
+4. An SVG pattern is also generated as an instant-loading fallback
+
+**Display layers (back to front):**
+1. **Solid color**: Theme's background color
+2. **SVG pattern**: Subtle geometric pattern using theme colors (instant load)
+3. **AI image**: Full background image at 15% opacity (lazy loads with fade)
+4. **Gradient overlay**: Ensures text readability
+
+**Configuration:**
+- Requires `BLOB_READ_WRITE_TOKEN` environment variable
+- Falls back gracefully to SVG patterns if not configured
+- Image generation adds ~10-15 seconds to theme creation time
+
+**Cost:**
+- DALL-E 3 (1792x1024): ~$0.04/image
+- Storage: Vercel Blob free tier (1GB)
+
 ### 3. Copy Transformation
 
 The AI rewrites ALL text in the theme's voice:
@@ -264,7 +289,19 @@ export const themeSchema = z.object({
     decorativeCSS: z.string().max(500),
     animationStyle: z.enum(["none", "subtle", "energetic"]),
   }),
+  
+  // AI generates a prompt for background image
+  backgroundImagePrompt: z.string(),
 })
+
+// Background image data (added after DALL-E generation)
+export const backgroundImageSchema = z.object({
+  url: z.string(),           // Vercel Blob URL or SVG data URL
+  blurDataUrl: z.string(),   // Tiny blur placeholder
+  svgPattern: z.string(),    // SVG pattern fallback
+  prompt: z.string(),        // The DALL-E prompt used
+  generatedAt: z.string(),   // ISO timestamp
+}).nullable()
 ```
 
 ## Customization

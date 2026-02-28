@@ -1,9 +1,11 @@
 import { generateText, Output } from "ai"
 import { themeSchema } from "@/lib/theme-schema"
+import type { GeneratedTheme } from "@/lib/theme-schema"
 import { setTheme, deleteTheme } from "@/lib/redis"
 import { fetchReadingList } from "@/lib/hardcover"
 import { resumeData } from "@/lib/resume-data"
 import { getNextTheme, getFeatureFlags } from "@/lib/themes-config"
+import { generateBackgroundImage, isImageGenEnabled } from "@/lib/image-gen"
 import {
   AI_CONFIG,
   ENV_KEYS,
@@ -97,6 +99,7 @@ GUIDELINES:
 - Border radius: Match the theme (0px for angular/brutal, high values for soft/retro).
 - Decorative CSS: Add theme-specific visual flair using ONLY ${ALLOWED_DECORATIVE_CSS_PROPERTIES.join(", ")} CSS properties. Keep it under ${AI_CONFIG.MAX_DECORATIVE_CSS_LENGTH} characters. This CSS will be applied to the page body.
 - Animation style: "${ANIMATION_STYLE.ENERGETIC}" for high-energy themes, "${ANIMATION_STYLE.SUBTLE}" for elegant, "${ANIMATION_STYLE.NONE}" for minimal.
+- Background Image Prompt: Write a detailed DALL-E prompt (100-200 words) to generate a background image that perfectly captures this theme's aesthetic. Consider: visual elements, mood, color palette, artistic style. The image will be used as a subtle full-page background, so describe something that works well faded/translucent behind text. For abstract themes, describe abstract art. For nature themes, describe landscapes. For tech themes, describe futuristic/digital visuals. Match the vibe!
 - The generatedAt field should be the current ISO timestamp: ${new Date().toISOString()}
 - The themeSlug should be a URL-friendly version of the theme name.
 
@@ -110,7 +113,14 @@ BE BOLD. BE CREATIVE. FULLY COMMIT TO THE THEME.`,
       )
     }
 
-    const theme = result.output
+    // Cast to GeneratedTheme type (includes optional backgroundImage)
+    const theme = result.output as GeneratedTheme
+
+    // Generate background image (async, gracefully degrades to SVG if fails)
+    console.log("[Theme] Generating background image...")
+    const backgroundImage = await generateBackgroundImage(theme)
+    theme.backgroundImage = backgroundImage
+    console.log("[Theme] Background image generated:", backgroundImage?.url?.slice(0, 50) ?? "N/A")
 
     // Store in Redis
     await setTheme(theme)

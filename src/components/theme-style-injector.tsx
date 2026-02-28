@@ -1,4 +1,5 @@
 import type { GeneratedTheme } from "@/lib/theme-schema"
+import { BackgroundImage } from "./background-image"
 
 function googleFontUrl(families: string[]): string {
   const params = families
@@ -41,6 +42,14 @@ function sanitizeCSS(css: string): string {
   return validDeclarations.join(";")
 }
 
+/**
+ * Check if URL is AI-generated image (not SVG fallback)
+ */
+function isAiGeneratedImage(url: string | undefined): boolean {
+  if (!url) return false
+  return url.startsWith("http") && !url.startsWith("data:")
+}
+
 export function ThemeStyleInjector({ theme }: { theme: GeneratedTheme }) {
   const fonts = [
     theme.typography.headingFont,
@@ -49,6 +58,12 @@ export function ThemeStyleInjector({ theme }: { theme: GeneratedTheme }) {
   ].filter((f, i, arr) => arr.indexOf(f) === i)
 
   const decorativeCSS = sanitizeCSS(theme.style.decorativeCSS)
+  
+  // Background image handling
+  const bgImage = theme.backgroundImage
+  const hasAiImage = isAiGeneratedImage(bgImage?.url)
+  const svgPattern = bgImage?.svgPattern || ""
+  const aiImageUrl = hasAiImage ? bgImage?.url : ""
 
   const animationCSS =
     theme.style.animationStyle === "energetic"
@@ -110,8 +125,54 @@ export function ThemeStyleInjector({ theme }: { theme: GeneratedTheme }) {
       color: var(--theme-fg);
       font-family: var(--theme-body-font);
       transition: background-color 0.3s, color 0.3s;
+      min-height: 100vh;
       ${decorativeCSS}
     }
+    
+    /* Background image layers */
+    .theme-bg-container {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      overflow: hidden;
+    }
+    
+    .theme-bg-svg {
+      position: absolute;
+      inset: 0;
+      background-image: url("${svgPattern}");
+      background-repeat: repeat;
+      background-size: 100px 100px;
+      opacity: 0.5;
+    }
+    
+    .theme-bg-image {
+      position: absolute;
+      inset: 0;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      opacity: 0;
+      transition: opacity 1.5s ease-in-out;
+    }
+    
+    .theme-bg-image.loaded {
+      opacity: 0.5;
+    }
+    
+    .theme-bg-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        to bottom,
+        ${theme.colors.background}99 0%,
+        ${theme.colors.background}80 30%,
+        ${theme.colors.background}80 70%,
+        ${theme.colors.background}99 100%
+      );
+    }
+    
     ${animationCSS}
   `
 
@@ -120,6 +181,20 @@ export function ThemeStyleInjector({ theme }: { theme: GeneratedTheme }) {
       {/* eslint-disable-next-line @next/next/no-page-custom-font */}
       <link rel="stylesheet" href={googleFontUrl(fonts)} />
       <style dangerouslySetInnerHTML={{ __html: cssVars }} />
+      
+      {/* Background image layers */}
+      <div className="theme-bg-container">
+        {/* SVG pattern fallback (instant load) */}
+        {svgPattern && <div className="theme-bg-svg" />}
+        
+        {/* AI-generated image (lazy load with fade) */}
+        {hasAiImage && (
+          <BackgroundImage url={aiImageUrl!} />
+        )}
+        
+        {/* Overlay for readability */}
+        <div className="theme-bg-overlay" />
+      </div>
     </>
   )
 }

@@ -5,6 +5,7 @@ A dynamic, AI-powered personal portfolio that automatically regenerates itself w
 ## ✨ Features
 
 - **AI Theme Generation** - Uses GPT-4 to completely reimagine your portfolio in different aesthetic styles
+- **AI Background Images** - DALL-E generates unique background artwork for each theme (optional)
 - **Automated Rotation** - Daily cron job automatically generates new themes
 - **Reading List Integration** - Pulls your currently reading books from Hardcover
 - **Multiple Layout Variants** - Classic, brutalist, cards, terminal, and magazine layouts
@@ -76,6 +77,7 @@ curl -X POST http://localhost:3000/api/theme \
 
 | Variable | Description |
 |----------|-------------|
+| `BLOB_READ_WRITE_TOKEN` | Vercel Blob token for AI-generated background images |
 | `EDGE_CONFIG` | Vercel Edge Config connection string for dynamic theme lists |
 | `CACHE_CLEAR_SECRET` | Secret for authenticating cache clearing endpoint |
 | `HARDCOVER_API_TOKEN` | Optional token for higher Hardcover API rate limits |

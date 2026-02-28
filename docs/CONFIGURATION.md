@@ -107,6 +107,31 @@ EDGE_CONFIG=https://edge-config.vercel.com/ecfg_xxxxx?token=xxxxx
 - Feature flags (force theme, toggle features)
 - Instant configuration updates globally
 
+#### Vercel Blob Storage (Background Images)
+
+```bash
+BLOB_READ_WRITE_TOKEN=vercel_blob_rw_xxxxxxxxxxxxx
+```
+
+**Setup:**
+1. In Vercel dashboard, go to Storage → Blob
+2. Create a new Blob store
+3. Copy the read-write token to `BLOB_READ_WRITE_TOKEN`
+
+**What it does:**
+- Stores AI-generated background images for each theme
+- Uses DALL-E to generate unique artwork matching each theme's aesthetic
+- Images are served from Vercel's CDN for fast loading
+
+**Cost Estimates:**
+- DALL-E 3 (1792x1024): ~$0.04 per image
+- Vercel Blob: Free tier includes 1GB storage
+- Daily theme generation: ~$1.20/month for images
+
+**Without this variable:**
+- Background images fall back to SVG patterns generated from theme colors
+- Still looks good, just less unique per theme
+
 ## Next.js Configuration
 
 ### next.config.mjs

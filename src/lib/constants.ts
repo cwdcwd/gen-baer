@@ -19,6 +19,24 @@ export const AI_CONFIG = {
 } as const
 
 // ============================================================================
+// Image Generation Configuration
+// ============================================================================
+
+export const IMAGE_CONFIG = {
+  /** DALL-E model to use */
+  DALLE_MODEL: "dall-e-3" as const,
+  /** Image size for generation */
+  IMAGE_SIZE: "1792x1024" as const,
+  /** Image quality */
+  IMAGE_QUALITY: "standard" as const,
+  /** Whether background image generation is enabled */
+  ENABLED: true,
+  /** Blur placeholder dimensions */
+  BLUR_WIDTH: 10,
+  BLUR_HEIGHT: 6,
+} as const
+
+// ============================================================================
 // Redis Keys & Cache Configuration
 // ============================================================================
 
@@ -163,6 +181,9 @@ export const ENV_KEYS = {
   // Authentication
   CRON_SECRET: "CRON_SECRET",
   ADMIN_SECRET: "ADMIN_SECRET",
+  
+  // Vercel Blob (for background images)
+  BLOB_READ_WRITE_TOKEN: "BLOB_READ_WRITE_TOKEN",
   
   // Optional services
   EDGE_CONFIG: "EDGE_CONFIG",
