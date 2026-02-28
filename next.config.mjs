@@ -1,5 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Disable Turbopack due to memory leaks
+  turbopack: false,
   typescript: {
     ignoreBuildErrors: true,
   },
