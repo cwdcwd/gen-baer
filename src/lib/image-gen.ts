@@ -63,20 +63,12 @@ export function generateSvgPattern(theme: GeneratedTheme): string {
 }
 
 /**
- * Generate a tiny blur placeholder from an image URL
+ * Generate a tiny blur placeholder SVG
+ * Creates a simple blurred SVG without fetching the image
  */
-async function generateBlurPlaceholder(imageUrl: string): Promise<string> {
-  try {
-    // Fetch the image
-    const response = await fetch(imageUrl)
-    const arrayBuffer = await response.arrayBuffer()
-    
-    // For now, create a simple colored placeholder based on the first few bytes
-    // In production, you'd use sharp or similar to create a real blur
-    const base64 = Buffer.from(arrayBuffer).toString("base64").slice(0, 50)
-    
-    // Create a tiny SVG as blur placeholder (much smaller than real blur)
-    const blurSvg = `
+function generateBlurPlaceholder(): string {
+  // Create a tiny SVG as blur placeholder
+  const blurSvg = `
 <svg xmlns="http://www.w3.org/2000/svg" width="${IMAGE_CONFIG.BLUR_WIDTH}" height="${IMAGE_CONFIG.BLUR_HEIGHT}">
   <filter id="b" color-interpolation-filters="sRGB">
     <feGaussianBlur stdDeviation="2"/>
@@ -84,12 +76,7 @@ async function generateBlurPlaceholder(imageUrl: string): Promise<string> {
   <rect width="100%" height="100%" fill="#1a1a2e" filter="url(#b)"/>
 </svg>`.trim()
     
-    return `data:image/svg+xml;base64,${Buffer.from(blurSvg).toString("base64")}`
-  } catch (error) {
-    console.error("[ImageGen] Failed to generate blur placeholder:", error)
-    // Return a simple solid color placeholder
-    return `data:image/svg+xml;base64,${Buffer.from('<svg xmlns="http://www.w3.org/2000/svg" width="10" height="6"><rect fill="#1a1a2e" width="10" height="6"/></svg>').toString("base64")}`
-  }
+  return `data:image/svg+xml;base64,${Buffer.from(blurSvg).toString("base64")}`
 }
 
 /**
@@ -135,11 +122,11 @@ async function uploadToBlob(imageUrl: string, filename: string): Promise<string>
 
 /**
  * Main function: Generate background image for a theme
- * Returns null if generation fails or is disabled (graceful degradation)
+ * Always returns a valid BackgroundImage (uses SVG fallback on failure)
  */
 export async function generateBackgroundImage(
   theme: GeneratedTheme
-): Promise<BackgroundImage> {
+): Promise<NonNullable<BackgroundImage>> {
   // Always generate SVG pattern as fallback
   const svgPattern = generateSvgPattern(theme)
   
@@ -164,7 +151,7 @@ export async function generateBackgroundImage(
     const blobUrl = await uploadToBlob(dalleUrl, filename)
     
     // Generate blur placeholder
-    const blurDataUrl = await generateBlurPlaceholder(blobUrl)
+    const blurDataUrl = generateBlurPlaceholder()
     
     console.log("[ImageGen] Successfully generated background image")
     

@@ -8,17 +8,30 @@ export const dynamic = "force-dynamic"
  * 
  * Query params:
  * - key: "books" | "themes" | "all" (default: "all")
- * - secret: Required API secret for authentication
+ * 
+ * Authentication:
+ * - Provide the secret via the Authorization header, e.g.:
+ *   Authorization: Bearer <CACHE_CLEAR_SECRET>
  */
 export async function DELETE(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
     const key = searchParams.get("key") || "all"
-    const secret = searchParams.get("secret")
 
-    // Simple authentication - require a secret
+    // Extract secret from Authorization header
+    const authHeader = request.headers.get("authorization") || request.headers.get("Authorization")
     const expectedSecret = process.env.CACHE_CLEAR_SECRET
-    if (!expectedSecret || secret !== expectedSecret) {
+
+    let providedSecret: string | null = null
+    if (authHeader) {
+      if (authHeader.startsWith("Bearer ")) {
+        providedSecret = authHeader.slice("Bearer ".length)
+      } else {
+        providedSecret = authHeader
+      }
+    }
+
+    if (!expectedSecret || providedSecret !== expectedSecret) {
       return NextResponse.json(
         { error: "Unauthorized - invalid or missing secret" },
         { status: 401 }

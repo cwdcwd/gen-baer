@@ -16,11 +16,8 @@ export async function getTheme(slug?: string): Promise<GeneratedTheme | null> {
 export async function setTheme(theme: GeneratedTheme): Promise<void> {
   await redis.set(`${REDIS_KEYS.THEME_PREFIX}${theme.themeSlug}`, theme)
   
-  // Add to available themes list
-  const available = await getAvailableThemes()
-  if (!available.includes(theme.themeSlug)) {
-    await redis.sadd(REDIS_KEYS.AVAILABLE_THEMES, theme.themeSlug)
-  }
+  // Add to available themes list (SADD is idempotent - no need to check first)
+  await redis.sadd(REDIS_KEYS.AVAILABLE_THEMES, theme.themeSlug)
 }
 
 export async function getAvailableThemes(): Promise<string[]> {
@@ -30,14 +27,13 @@ export async function getAvailableThemes(): Promise<string[]> {
 
 export async function getAllThemes(): Promise<GeneratedTheme[]> {
   const slugs = await getAvailableThemes()
-  const themes: GeneratedTheme[] = []
   
-  for (const slug of slugs) {
-    const theme = await getTheme(slug)
-    if (theme) themes.push(theme)
-  }
+  // Fetch all themes concurrently for better performance
+  const themePromises = slugs.map(slug => getTheme(slug))
+  const results = await Promise.all(themePromises)
   
-  return themes
+  // Filter out null results
+  return results.filter((theme): theme is GeneratedTheme => theme !== null)
 }
 
 export async function getRotationIndex(): Promise<number> {

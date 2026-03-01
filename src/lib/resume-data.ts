@@ -1,7 +1,7 @@
 export const resumeData = {
   name: "Lazybaer",
   tagline: "Multi-skilled technologist, cryptography lover, generative AI tinkerer, and microcontroller enthusiast",
-  avatar: "https://s.gravatar.com/avatar/e68a8dbaf1555f955d36a12a5fd21523?s=256" as string | null,
+  avatar: "https://s.gravatar.com/avatar/e68a8dbaf1555f955d36a12a5fd21523?s=256",
   bio: `I'm a seasoned technologist, former Crowd Sourcerer, and general tinkerer with a penchant for chasing after shiny things. I've been hacking and writing code since I was a kid -- from my early days with BASIC on my TRS-80 to my current work with TypeScript and other modern languages.
 
 My focus these days is on Innovation, Crowd Sourcing, the Future of Work, and exploring the frontiers of generative AI. I believe decentralized systems are the future and that cryptography is the key to privacy, innovation, and a free society.

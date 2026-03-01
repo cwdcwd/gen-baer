@@ -93,7 +93,7 @@ export async function fetchReadingList(): Promise<HardcoverBook[]> {
     // Include authorization header if token is provided
     // Hardcover requires "Bearer " prefix for JWT tokens
     if (apiToken) {
-      headers[HTTP_HEADERS.AUTHORIZATION_CAPS] = `Bearer ${apiToken}`
+      headers[HTTP_HEADERS.AUTHORIZATION] = `Bearer ${apiToken}`
     }
 
     const response = await fetch(HARDCOVER_CONFIG.API_URL, {

@@ -105,7 +105,7 @@ Default themes include:
 - Art deco gatsby
 - Lo-fi hip hop
 - Swiss design minimalism
-- Psychedelic 60s
+- Addams Family / Edgar Allan Poe
 - Film noir detective
 
 You can customize the theme rotation by updating [src/lib/themes-config.ts](src/lib/themes-config.ts) or using Vercel Edge Config.

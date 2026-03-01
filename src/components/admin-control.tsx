@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import Image from "next/image"
 import {
   Dialog,
@@ -18,19 +18,16 @@ export function AdminControl() {
   const [isAdmin, setIsAdmin] = useState(false)
   const [showPasswordDialog, setShowPasswordDialog] = useState(false)
   const [password, setPassword] = useState("")
+  const [adminSecret, setAdminSecret] = useState<string | null>(null)
 
-  // Check for admin mode in localStorage on mount
-  useEffect(() => {
-    const adminMode = localStorage.getItem("admin-mode") === "true"
-    setIsAdmin(adminMode)
-  }, [])
+  // Note: Admin secret is kept in memory only (not persisted) for security.
+  // User needs to re-authenticate after page reload by clicking the avatar.
 
   function handleAdminClick() {
     if (isAdmin) {
       // Exit admin mode
       setIsAdmin(false)
-      localStorage.removeItem("admin-mode")
-      localStorage.removeItem("admin-secret")
+      setAdminSecret(null)
     } else {
       // Show password dialog
       setShowPasswordDialog(true)
@@ -41,10 +38,8 @@ export function AdminControl() {
     e?.preventDefault()
     if (!password.trim()) return
 
-    // Store the secret and enable admin mode
-    // The secret will be verified when first used
-    localStorage.setItem("admin-mode", "true")
-    localStorage.setItem("admin-secret", password)
+    // Store the secret in memory only (not persisted for security)
+    setAdminSecret(password)
     setIsAdmin(true)
     setShowPasswordDialog(false)
     setPassword("")
@@ -112,27 +107,27 @@ export function AdminControl() {
       </Dialog>
 
       {/* Admin toolbar */}
-      {isAdmin && <AdminToolbar />}
+      {isAdmin && adminSecret && <AdminToolbar adminSecret={adminSecret} onLogout={() => {
+        setIsAdmin(false)
+        setAdminSecret(null)
+      }} />}
     </>
   )
 }
 
-function AdminToolbar() {
+function AdminToolbar({ adminSecret, onLogout }: { adminSecret: string; onLogout: () => void }) {
   const [isRegenerating, setIsRegenerating] = useState(false)
   const [message, setMessage] = useState<string | null>(null)
   const [showThemeDialog, setShowThemeDialog] = useState(false)
   const [themeName, setThemeName] = useState("")
 
   async function handleClearCache(type: "books" | "themes" | "all") {
-    const secret = localStorage.getItem("admin-secret")
-    if (!secret) {
-      alert("Admin secret not found")
-      return
-    }
-
     try {
-      const response = await fetch(`/api/cache/clear?key=${type}&secret=${secret}`, {
+      const response = await fetch(`/api/cache/clear?key=${type}`, {
         method: "DELETE",
+        headers: {
+          "Authorization": `Bearer ${adminSecret}`,
+        },
       })
 
       const data = await response.json()
@@ -142,8 +137,7 @@ function AdminToolbar() {
       } else {
         if (response.status === 401) {
           alert("Invalid admin secret. Exiting admin mode.")
-          localStorage.removeItem("admin-mode")
-          localStorage.removeItem("admin-secret")
+          onLogout()
           window.location.reload()
         } else {
           alert(`Error: ${data.error}`)
@@ -160,11 +154,6 @@ function AdminToolbar() {
 
   async function handleRegenerateTheme(e?: React.FormEvent) {
     e?.preventDefault()
-    const secret = localStorage.getItem("admin-secret")
-    if (!secret) {
-      alert("Admin secret not found")
-      return
-    }
     
     setIsRegenerating(true)
     setMessage("Generating theme...")
@@ -174,7 +163,7 @@ function AdminToolbar() {
       const response = await fetch("/api/theme", {
         method: "PATCH",
         headers: {
-          "Authorization": `Bearer ${secret}`,
+          "Authorization": `Bearer ${adminSecret}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify(themeName.trim() ? { theme: themeName } : {}),
@@ -189,8 +178,7 @@ function AdminToolbar() {
       } else {
         if (response.status === 401) {
           alert("Invalid admin secret. Exiting admin mode.")
-          localStorage.removeItem("admin-mode")
-          localStorage.removeItem("admin-secret")
+          onLogout()
           window.location.reload()
         } else {
           alert(`Error: ${data.error}`)

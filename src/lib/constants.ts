@@ -150,8 +150,7 @@ export const HTTP_STATUS = {
 
 /** HTTP headers */
 export const HTTP_HEADERS = {
-  AUTHORIZATION: "authorization",
-  AUTHORIZATION_CAPS: "Authorization",
+  AUTHORIZATION: "Authorization",
   CONTENT_TYPE: "Content-Type",
 } as const
 

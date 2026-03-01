@@ -125,7 +125,7 @@ gen-baer/
 │   │   └── utils.ts             # General utilities
 │   │
 │   ├── hooks/                   # Custom React hooks
-│   └── proxy.ts                 # Next.js proxy (middleware)
+│   └── proxy.ts                 # Next.js proxy
 │
 ├── docs/                        # Documentation (you are here!)
 │   ├── README.md               # Documentation index
