@@ -1,5 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Disable Turbopack due to memory leaks
+  turbopack: false,
   typescript: {
     ignoreBuildErrors: true,
   },
@@ -12,6 +14,10 @@ const nextConfig = {
       {
         protocol: "https",
         hostname: "assets.hardcover.app",
+      },
+      {
+        protocol: "https",
+        hostname: "s.gravatar.com",
       },
     ],
   },
