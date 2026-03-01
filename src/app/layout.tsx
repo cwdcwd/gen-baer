@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next"
+import Script from "next/script"
 import { resumeData } from "@/lib/resume-data"
 import "./globals.css"
 
@@ -20,7 +21,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="min-h-screen antialiased">{children}</body>
+      <body className="min-h-screen antialiased">
+        {children}
+        <Script
+          data-goatcounter="https://lazybaer.goatcounter.com/count"
+          async
+          src="//gc.zgo.at/count.js"
+        />
+      </body>
     </html>
   )
 }
