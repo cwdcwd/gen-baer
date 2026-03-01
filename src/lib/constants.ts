@@ -8,7 +8,11 @@
 // ============================================================================
 
 export const AI_CONFIG = {
-  /** OpenAI model to use for theme generation */
+  /** 
+   * OpenAI model for theme generation (Vercel AI SDK format).
+   * Note: Uses "openai/" prefix required by the Vercel AI SDK's model routing.
+   * Do NOT use with the native 'openai' package — use plain model IDs there.
+   */
   MODEL: "openai/gpt-4o" as const,
   /** Maximum execution duration in seconds for AI routes */
   MAX_DURATION: 60,
