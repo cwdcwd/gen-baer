@@ -1,3 +1,4 @@
+import Image from "next/image"
 import type { GeneratedTheme } from "@/lib/theme-schema"
 import type { HardcoverBook } from "@/lib/hardcover"
 
@@ -16,11 +17,12 @@ const STATUS_LABELS: Record<HardcoverBook["status"], string> = {
 function BookCover({ book }: { book: HardcoverBook }) {
   if (book.coverUrl) {
     return (
-      <img
+      <Image
         src={book.coverUrl}
         alt={`Cover of ${book.title}`}
-        className="h-full w-full object-cover"
-        crossOrigin="anonymous"
+        fill
+        className="object-cover"
+        sizes="(max-width: 768px) 80px, 120px"
       />
     )
   }
@@ -163,7 +165,7 @@ export function ReadingList({ theme, variant, books }: ReadingListProps) {
               {group.books.map((book, i) => (
                 <div key={i} className="theme-animate flex flex-col gap-2" style={{ animationDelay: `${i * 0.05}s` }}>
                   <div
-                    className="aspect-[2/3] overflow-hidden"
+                    className="relative aspect-[2/3] overflow-hidden"
                     style={{ borderRadius: "var(--theme-radius)" }}
                   >
                     <BookCover book={book} />
@@ -216,7 +218,7 @@ export function ReadingList({ theme, variant, books }: ReadingListProps) {
                   }}
                 >
                   <div
-                    className="h-16 w-11 shrink-0 overflow-hidden"
+                    className="relative h-16 w-11 shrink-0 overflow-hidden"
                     style={{ borderRadius: `calc(var(--theme-radius) / 2)` }}
                   >
                     <BookCover book={book} />
@@ -269,7 +271,7 @@ export function ReadingList({ theme, variant, books }: ReadingListProps) {
                 style={{ animationDelay: `${i * 0.05}s` }}
               >
                 <div
-                  className="h-14 w-10 shrink-0 overflow-hidden"
+                  className="relative h-14 w-10 shrink-0 overflow-hidden"
                   style={{ borderRadius: `calc(var(--theme-radius) / 2)` }}
                 >
                   <BookCover book={book} />
