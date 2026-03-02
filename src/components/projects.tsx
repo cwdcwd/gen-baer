@@ -23,7 +23,13 @@ function getThemedProject(
 }
 
 function getProjectEventName(name: string): string {
-  return `projects-${name.toLowerCase().replace(/\s+/g, '_')}`
+  const normalized = name
+    .toLowerCase()
+    // Replace any sequence of non-alphanumeric/underscore characters with a single underscore
+    .replace(/[^a-z0-9_]+/g, '_')
+    // Trim leading and trailing underscores
+    .replace(/^_+|_+$/g, '')
+  return `projects-${normalized}`
 }
 
 export function Projects({ theme, variant, projects }: ProjectsProps) {
