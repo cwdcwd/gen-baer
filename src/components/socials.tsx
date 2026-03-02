@@ -17,6 +17,10 @@ const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
   book: BookOpen,
 }
 
+function getSocialEventName(platform: string): string {
+  return `socials-${platform.toLowerCase().replace(/\s+/g, '_').replace(/\//g, '_')}`
+}
+
 export function Socials({ theme, variant, socials }: SocialsProps) {
   if (variant === "terminal") {
     return (
@@ -39,7 +43,7 @@ export function Socials({ theme, variant, socials }: SocialsProps) {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="group text-sm hover:underline"
-                data-goatcounter-click={`socials-${social.platform.toLowerCase().replace(/\s+/g, '_').replace(/\//g, '_')}`}
+                data-goatcounter-click={getSocialEventName(social.platform)}
               >
                 <span style={{ color: "var(--theme-accent)" }}>{'> '}</span>
                 <span style={{ color: "var(--theme-fg)" }}>{social.platform}</span>
@@ -71,7 +75,7 @@ export function Socials({ theme, variant, socials }: SocialsProps) {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="brutalist-social-link group flex items-center gap-2 border-2 px-4 py-3 font-bold uppercase transition-colors"
-                data-goatcounter-click={`socials-${social.platform.toLowerCase().replace(/\s+/g, '_').replace(/\//g, '_')}`}
+                data-goatcounter-click={getSocialEventName(social.platform)}
               >
                 <Icon className="h-5 w-5" />
                 {social.platform}
@@ -103,7 +107,7 @@ export function Socials({ theme, variant, socials }: SocialsProps) {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="group flex items-center gap-3 transition-opacity hover:opacity-70"
-                data-goatcounter-click={`socials-${social.platform.toLowerCase().replace(/\s+/g, '_').replace(/\//g, '_')}`}
+                data-goatcounter-click={getSocialEventName(social.platform)}
               >
                 <span style={{ color: "var(--theme-fg-muted)" }}>
                   <Icon className="h-4 w-4" />
@@ -144,7 +148,7 @@ export function Socials({ theme, variant, socials }: SocialsProps) {
                   borderRadius: "var(--theme-radius)",
                   border: `1px solid var(--theme-border)`,
                 }}
-                data-goatcounter-click={`socials-${social.platform.toLowerCase().replace(/\s+/g, '_').replace(/\//g, '_')}`}
+                data-goatcounter-click={getSocialEventName(social.platform)}
               >
                 <span style={{ color: "var(--theme-accent)" }}>
                   <Icon className="h-6 w-6" />
@@ -180,7 +184,7 @@ export function Socials({ theme, variant, socials }: SocialsProps) {
               rel="noopener noreferrer"
               className="theme-animate flex items-center gap-2 transition-opacity hover:opacity-70"
               style={{ animationDelay: `${i * 0.1}s` }}
-              data-goatcounter-click={`socials-${social.platform.toLowerCase().replace(/\s+/g, '_').replace(/\//g, '_')}`}
+              data-goatcounter-click={getSocialEventName(social.platform)}
             >
               <span style={{ color: "var(--theme-accent)" }}>
                 <Icon className="h-5 w-5" />
