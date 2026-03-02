@@ -214,7 +214,7 @@ export function ThemeBadge({ theme }: ThemeBadgeProps) {
                   borderRadius: "var(--theme-radius)",
                   border: isCurrentTheme ? "none" : `1px solid var(--theme-border)`,
                 }}
-                data-goatcounter-click={`settings-theme_switch-${t.slug}`}
+                data-goatcounter-click={isCurrentTheme ? undefined : `settings-theme_switch-${t.slug}`}
               >
                 <div className="flex items-center gap-2">
                   <span className="font-semibold">{t.name}</span>
