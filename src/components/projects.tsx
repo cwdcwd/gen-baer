@@ -22,6 +22,16 @@ function getThemedProject(
   }
 }
 
+function getProjectEventName(name: string): string {
+  const normalized = name
+    .toLowerCase()
+    // Replace any sequence of non-alphanumeric/underscore characters with a single underscore
+    .replace(/[^a-z0-9_]+/g, '_')
+    // Trim leading and trailing underscores
+    .replace(/^_+|_+$/g, '')
+  return `projects-${normalized}`
+}
+
 export function Projects({ theme, variant, projects }: ProjectsProps) {
   if (variant === "terminal") {
     return (
@@ -45,6 +55,7 @@ export function Projects({ theme, variant, projects }: ProjectsProps) {
                   target="_blank"
                   rel="noopener noreferrer"
                   className="group flex flex-col gap-1"
+                  data-goatcounter-click={getProjectEventName(themed.name)}
                 >
                   <span className="text-sm">
                     <span style={{ color: "var(--theme-accent)" }}>{'> '}</span>
@@ -93,6 +104,7 @@ export function Projects({ theme, variant, projects }: ProjectsProps) {
                   animationDelay: `${i * 0.1}s`,
                   borderTop: `2px solid var(--theme-border)`,
                 }}
+                data-goatcounter-click={getProjectEventName(themed.name)}
               >
                 <div>
                   <span
@@ -141,6 +153,7 @@ export function Projects({ theme, variant, projects }: ProjectsProps) {
                 rel="noopener noreferrer"
                 className="theme-animate group flex flex-col gap-3"
                 style={{ animationDelay: `${i * 0.1}s` }}
+                data-goatcounter-click={getProjectEventName(themed.name)}
               >
                 <span
                   className="text-xs font-medium uppercase tracking-widest"
@@ -201,6 +214,7 @@ export function Projects({ theme, variant, projects }: ProjectsProps) {
                   borderRadius: "var(--theme-radius)",
                   border: `1px solid var(--theme-border)`,
                 }}
+                data-goatcounter-click={getProjectEventName(themed.name)}
               >
                 <h3
                   className="text-lg font-semibold group-hover:underline"
@@ -255,6 +269,7 @@ export function Projects({ theme, variant, projects }: ProjectsProps) {
               rel="noopener noreferrer"
               className="theme-animate group flex flex-col gap-2"
               style={{ animationDelay: `${i * 0.1}s` }}
+              data-goatcounter-click={getProjectEventName(themed.name)}
             >
               <h3
                 className="text-lg font-semibold group-hover:underline"

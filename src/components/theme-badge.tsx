@@ -110,6 +110,7 @@ export function ThemeBadge({ theme }: ThemeBadgeProps) {
           border: `1px solid var(--theme-border)`,
           borderRadius: "var(--theme-radius)",
         }}
+        data-goatcounter-click="settings-theme_selector"
       >
         <Palette className="h-3 w-3" style={{ color: "var(--theme-accent)" }} />
         <span>{theme.themeName}</span>
@@ -213,6 +214,7 @@ export function ThemeBadge({ theme }: ThemeBadgeProps) {
                   borderRadius: "var(--theme-radius)",
                   border: isCurrentTheme ? "none" : `1px solid var(--theme-border)`,
                 }}
+                data-goatcounter-click={isCurrentTheme ? undefined : `settings-theme_switch-${t.slug}`}
               >
                 <div className="flex items-center gap-2">
                   <span className="font-semibold">{t.name}</span>
