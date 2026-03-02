@@ -45,6 +45,7 @@ export function Projects({ theme, variant, projects }: ProjectsProps) {
                   target="_blank"
                   rel="noopener noreferrer"
                   className="group flex flex-col gap-1"
+                  data-goatcounter-click={`projects-${themed.name.toLowerCase().replace(/\s+/g, '_')}`}
                 >
                   <span className="text-sm">
                     <span style={{ color: "var(--theme-accent)" }}>{'> '}</span>
@@ -93,6 +94,7 @@ export function Projects({ theme, variant, projects }: ProjectsProps) {
                   animationDelay: `${i * 0.1}s`,
                   borderTop: `2px solid var(--theme-border)`,
                 }}
+                data-goatcounter-click={`projects-${themed.name.toLowerCase().replace(/\s+/g, '_')}`}
               >
                 <div>
                   <span
@@ -141,6 +143,7 @@ export function Projects({ theme, variant, projects }: ProjectsProps) {
                 rel="noopener noreferrer"
                 className="theme-animate group flex flex-col gap-3"
                 style={{ animationDelay: `${i * 0.1}s` }}
+                data-goatcounter-click={`projects-${themed.name.toLowerCase().replace(/\s+/g, '_')}`}
               >
                 <span
                   className="text-xs font-medium uppercase tracking-widest"
@@ -201,6 +204,7 @@ export function Projects({ theme, variant, projects }: ProjectsProps) {
                   borderRadius: "var(--theme-radius)",
                   border: `1px solid var(--theme-border)`,
                 }}
+                data-goatcounter-click={`projects-${themed.name.toLowerCase().replace(/\s+/g, '_')}`}
               >
                 <h3
                   className="text-lg font-semibold group-hover:underline"
@@ -255,6 +259,7 @@ export function Projects({ theme, variant, projects }: ProjectsProps) {
               rel="noopener noreferrer"
               className="theme-animate group flex flex-col gap-2"
               style={{ animationDelay: `${i * 0.1}s` }}
+              data-goatcounter-click={`projects-${themed.name.toLowerCase().replace(/\s+/g, '_')}`}
             >
               <h3
                 className="text-lg font-semibold group-hover:underline"
