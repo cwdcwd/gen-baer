@@ -1,2 +1,13 @@
+# Read by both pnpm 10 (Vercel builds) and pnpm 11 (local).
+# pnpm 11 ignores the "pnpm" field in package.json, so settings live here.
+overrides:
+  '@types/react': 19.2.14
+  '@types/react-dom': 19.2.3
+
+# pnpm 11
 allowBuilds:
-  esbuild: set this to true or false
+  esbuild: true
+
+# pnpm 10
+onlyBuiltDependencies:
+  - esbuild
