@@ -2,6 +2,7 @@ import { getTheme, getAvailableThemes } from "@/lib/redis"
 import { fetchReadingList } from "@/lib/hardcover"
 import { resumeData } from "@/lib/resume-data"
 import { fallbackTheme } from "@/lib/theme-schema"
+import { plainTheme, PLAIN_THEME_SLUG } from "@/lib/plain-theme"
 import { ThemeStyleInjector } from "@/components/theme-style-injector"
 import { Hero } from "@/components/hero"
 import { Bio } from "@/components/bio"
@@ -31,7 +32,9 @@ export default async function Page({
   
   // Load selected theme if set, otherwise pick a random one
   let theme = null
-  if (selectedThemeSlug) {
+  if (selectedThemeSlug === PLAIN_THEME_SLUG) {
+    theme = plainTheme
+  } else if (selectedThemeSlug) {
     theme = await getTheme(selectedThemeSlug).catch(() => null)
   }
   

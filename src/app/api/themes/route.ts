@@ -1,5 +1,6 @@
 import { getAllThemes } from "@/lib/redis"
 import { HTTP_STATUS } from "@/lib/constants"
+import { plainTheme } from "@/lib/plain-theme"
 
 /**
  * Public API to list all available cached themes
@@ -7,8 +8,9 @@ import { HTTP_STATUS } from "@/lib/constants"
  */
 export async function GET() {
   try {
-    const themes = await getAllThemes()
-    
+    // The built-in plain theme is listed first; it is not stored in Redis
+    const themes = [plainTheme, ...(await getAllThemes())]
+
     // Return simplified theme info for the picker
     const themeList = themes.map((theme) => ({
       slug: theme.themeSlug,
