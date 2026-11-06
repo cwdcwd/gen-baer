@@ -28,6 +28,24 @@ I'm a long-time lover of microcontrollers and hobby electronics, working with Ar
       tags: ["Healthcare", "AI", "TypeScript"],
     },
     {
+      name: "Forseti",
+      description: "Harvests meeting minutes and agendas from municipal websites, OCRs scanned PDFs, and flags documents that mention the terms you care about, with a digest on every run. Keeping watch on local government so you don't have to.",
+      url: "https://www.forseti.town/",
+      tags: ["Civic Tech", "OCR", "TypeScript"],
+    },
+    {
+      name: "Eggbook",
+      description: "A marketplace app for local egg sellers: profile pages, listings with photos and pricing, buyer messaging and order requests, and payments through Stripe Connect.",
+      url: "https://eggbook.vercel.app/",
+      tags: ["Marketplace", "Next.js", "Stripe"],
+    },
+    {
+      name: "Iketrix",
+      description: "An LLM-powered Eisenhower Matrix that sorts your tasks by urgency and importance, with an AI agent that can research and take on the ones worth delegating.",
+      url: "https://iketrix.vercel.app/",
+      tags: ["AI", "Productivity", "Next.js"],
+    },
+    {
       name: "Fleet Tracking & Compliance System",
       description: "Built a complete fleet tracking and compliance reporting system using Particle's IoT platform. Featured tutorial on Particle.io blog.",
       url: "https://www.particle.io/blog/how-to-build-a-fleet-tracking-and-compliance-reporting-system-with-particle/",
@@ -56,6 +74,24 @@ I'm a long-time lover of microcontrollers and hobby electronics, working with Ar
       description: "Model Context Protocol server for interacting with Pi-hole DNS ad-blocker. Enables LLM agents to manage network-wide ad blocking.",
       url: "https://github.com/cwdcwd/mcp-server-pihole",
       tags: ["MCP", "Pi-hole", "TypeScript"],
+    },
+    {
+      name: "Canon MCP",
+      description: "MCP server and REST API for scanning and printing on a networked Canon PIXMA, built on SANE's pixma backend because macOS has no working driver for it. Runs in a container on a Raspberry Pi.",
+      url: "https://github.com/cwdcwd/canon-mcp",
+      tags: ["MCP", "Raspberry Pi", "TypeScript"],
+    },
+    {
+      name: "Railway MCP Bridge",
+      description: "Streamable HTTP bridge for Railway's official MCP server, which only speaks stdio, so remote agents and MCP aggregators can use it. Token-gated, with DNS-rebinding protection.",
+      url: "https://github.com/cwdcwd/mcp-railway",
+      tags: ["MCP", "Railway", "Docker"],
+    },
+    {
+      name: "Porkbun MCP",
+      description: "Pinned, reproducible Docker deployment of Porkbun's official MCP server, exposed over Streamable HTTP for a self-hosted MCP fleet. Stores no credentials anywhere.",
+      url: "https://github.com/cwdcwd/mcp-server-porkbun",
+      tags: ["MCP", "DNS", "Docker"],
     },
     {
       name: "Processing Game of Life",
