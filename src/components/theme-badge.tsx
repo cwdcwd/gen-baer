@@ -2,7 +2,27 @@
 
 import { useState, useEffect } from "react"
 import type { GeneratedTheme } from "@/lib/theme-schema"
-import { RefreshCw, Palette, ChevronUp, ChevronDown, Check } from "lucide-react"
+import { RefreshCw, Palette, ChevronUp, ChevronDown, Check, X } from "lucide-react"
+
+const HINT_STORAGE_KEY = "theme-hint-seen"
+const HINT_DELAY_MS = 1500
+const HINT_AUTO_HIDE_MS = 10_000
+
+function hasSeenHint(): boolean {
+  try {
+    return window.localStorage.getItem(HINT_STORAGE_KEY) === "1"
+  } catch {
+    return false
+  }
+}
+
+function markHintSeen() {
+  try {
+    window.localStorage.setItem(HINT_STORAGE_KEY, "1")
+  } catch {
+    // Storage blocked (private mode etc.); the hint just shows again next visit
+  }
+}
 
 interface ThemeBadgeProps {
   theme: GeneratedTheme
@@ -24,11 +44,38 @@ export function ThemeBadge({ theme }: ThemeBadgeProps) {
   const [availableThemes, setAvailableThemes] = useState<AvailableTheme[]>([])
   const [isLoadingThemes, setIsLoadingThemes] = useState(false)
 
+  // First-visit hint: pulse the button and show a short toast until the
+  // visitor opens the picker or dismisses it
+  const [showPulse, setShowPulse] = useState(false)
+  const [showToast, setShowToast] = useState(false)
+
   // Check for admin mode via URL
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
     setIsAdmin(params.get("admin") === "true")
   }, [])
+
+  useEffect(() => {
+    if (hasSeenHint()) return
+    setShowPulse(true)
+    const showTimer = setTimeout(() => setShowToast(true), HINT_DELAY_MS)
+    // Once the toast has had its moment, don't show it on later visits.
+    // The pulse stays for the rest of this visit unless they interact.
+    const hideTimer = setTimeout(() => {
+      setShowToast(false)
+      markHintSeen()
+    }, HINT_DELAY_MS + HINT_AUTO_HIDE_MS)
+    return () => {
+      clearTimeout(showTimer)
+      clearTimeout(hideTimer)
+    }
+  }, [])
+
+  function dismissHint() {
+    setShowPulse(false)
+    setShowToast(false)
+    markHintSeen()
+  }
 
   // Load available themes when expanded
   useEffect(() => {
@@ -102,8 +149,12 @@ export function ThemeBadge({ theme }: ThemeBadgeProps) {
     >
       {/* Main toggle button */}
       <button
-        onClick={() => setIsExpanded(!isExpanded)}
-        className="flex items-center gap-2 px-3 py-2 text-xs shadow-lg backdrop-blur-sm transition-opacity hover:opacity-90"
+        onClick={() => {
+          setIsExpanded(!isExpanded)
+          dismissHint()
+        }}
+        aria-label={`Theme: ${theme.themeName}. Switch theme`}
+        className="relative flex items-center gap-2 px-3 py-2 text-xs shadow-lg backdrop-blur-sm transition-opacity hover:opacity-90"
         style={{
           backgroundColor: "var(--theme-bg-secondary)",
           color: "var(--theme-fg-muted)",
@@ -121,7 +172,44 @@ export function ThemeBadge({ theme }: ThemeBadgeProps) {
         ) : (
           <ChevronDown className="h-3 w-3" />
         )}
+        {showPulse && (
+          <span className="pointer-events-none absolute -top-1 -left-1 flex h-3 w-3" aria-hidden="true">
+            <span
+              className="absolute inline-flex h-full w-full rounded-full opacity-75 motion-safe:animate-ping"
+              style={{ backgroundColor: "var(--theme-accent)" }}
+            />
+            <span
+              className="relative inline-flex h-3 w-3 rounded-full"
+              style={{ backgroundColor: "var(--theme-accent)" }}
+            />
+          </span>
+        )}
       </button>
+
+      {showToast && !isExpanded && (
+        <div
+          role="status"
+          className="flex max-w-[15rem] items-start gap-2 px-3 py-2 text-xs shadow-lg"
+          style={{
+            backgroundColor: "var(--theme-bg-secondary)",
+            color: "var(--theme-fg)",
+            border: `1px solid var(--theme-accent)`,
+            borderRadius: "var(--theme-radius)",
+          }}
+        >
+          <span>
+            This site redesigns itself with AI. Click above to try another theme, including a plain one.
+          </span>
+          <button
+            onClick={dismissHint}
+            aria-label="Dismiss"
+            className="shrink-0 transition-opacity hover:opacity-70"
+            style={{ color: "var(--theme-fg-muted)" }}
+          >
+            <X className="h-3 w-3" />
+          </button>
+        </div>
+      )}
 
       {regenResult && (
         <div
