@@ -3,7 +3,6 @@ import type { NextRequest } from "next/server"
 
 export function proxy(request: NextRequest) {
   const response = NextResponse.next()
-  const { searchParams } = request.nextUrl
 
   // Track visitor count via cookie
   const visitCount = parseInt(request.cookies.get("visit_count")?.value || "0", 10)
@@ -12,13 +11,6 @@ export function proxy(request: NextRequest) {
     path: "/",
     sameSite: "lax",
   })
-
-  // Query param theme override: ?theme=heavy-metal
-  // This triggers a server-side regen via a header the page can read
-  const themeOverride = searchParams.get("theme")
-  if (themeOverride) {
-    response.headers.set("x-theme-override", themeOverride)
-  }
 
   // Pass visitor count to the server
   response.headers.set("x-visitor-count", String(visitCount + 1))

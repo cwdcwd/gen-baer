@@ -64,7 +64,7 @@ export const themeSchema = z.object({
   }),
 
   // Background image prompt - used to generate the background image after theme creation
-  backgroundImagePrompt: z.string().describe("A detailed DALL-E prompt to generate a background image that matches this theme. Should describe visual elements, mood, colors, and style. 100-200 words. The image will be used as a subtle full-page background, so it should work well faded/translucent."),
+  backgroundImagePrompt: z.string().describe("A detailed image-generation prompt to generate a background image that matches this theme. Should describe visual elements, mood, colors, and style. 100-200 words. The image will be used as a subtle full-page background, so it should work well faded/translucent."),
 })
 
 // Separate schema for background image data (populated after image generation)

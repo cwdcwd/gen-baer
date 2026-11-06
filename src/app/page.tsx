@@ -15,10 +15,16 @@ import { cookies } from "next/headers"
 
 export const dynamic = "force-dynamic"
 
-export default async function Page() {
-  // Get theme preference from cookie
+export default async function Page({
+  searchParams,
+}: {
+  searchParams: Promise<{ theme?: string | string[] }>
+}) {
+  // ?theme=<slug> previews a stored theme; otherwise use the cookie preference
+  const { theme: themeParam } = await searchParams
+  const queryThemeSlug = Array.isArray(themeParam) ? themeParam[0] : themeParam
   const cookieStore = await cookies()
-  const selectedThemeSlug = cookieStore.get("selected-theme")?.value
+  const selectedThemeSlug = queryThemeSlug || cookieStore.get("selected-theme")?.value
   
   // Get available themes
   const availableSlugs = await getAvailableThemes().catch(() => [])

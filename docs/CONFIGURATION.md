@@ -120,13 +120,13 @@ BLOB_READ_WRITE_TOKEN=vercel_blob_rw_xxxxxxxxxxxxx
 
 **What it does:**
 - Stores AI-generated background images for each theme
-- Uses DALL-E to generate unique artwork matching each theme's aesthetic
+- Uses the OpenAI image API (`gpt-image-2`) to generate unique artwork matching each theme's aesthetic
 - Images are served from Vercel's CDN for fast loading
 
 **Cost Estimates:**
-- DALL-E 3 (1792x1024): ~$0.04 per image
-- Vercel Blob: Free tier includes 1GB storage
-- Daily theme generation: ~$1.20/month for images
+- gpt-image-2, medium quality, 1536x1024: see current OpenAI image pricing
+- Vercel Blob: Free tier includes 1GB storage (images are WebP, a few hundred KB each)
+- Daily theme generation: one image per day (30 images/month)
 
 **Without this variable:**
 - Background images fall back to SVG patterns generated from theme colors

@@ -15,7 +15,7 @@ export const AI_CONFIG = {
    */
   MODEL: "openai/gpt-4o" as const,
   /** Maximum execution duration in seconds for AI routes */
-  MAX_DURATION: 60,
+  MAX_DURATION: 300,
   /** Maximum characters allowed for decorative CSS */
   MAX_DECORATIVE_CSS_LENGTH: 500,
   /** Maximum number of books to include in AI context */
@@ -27,12 +27,19 @@ export const AI_CONFIG = {
 // ============================================================================
 
 export const IMAGE_CONFIG = {
-  /** DALL-E model to use */
-  DALLE_MODEL: "dall-e-3" as const,
-  /** Image size for generation (1024x1024 square for consistent display) */
-  IMAGE_SIZE: "1024x1024" as const,
-  /** Image quality */
-  IMAGE_QUALITY: "standard" as const,
+  /**
+   * OpenAI image model. dall-e-3 (~May 2026) and gpt-image-1 were retired by OpenAI and now
+   * returns model_not_found. gpt-image-* models return base64 only (no URL).
+   */
+  IMAGE_MODEL: "gpt-image-2" as const,
+  /** Landscape size suits full-page backgrounds */
+  IMAGE_SIZE: "1536x1024" as const,
+  /** Image quality: low | medium | high | auto */
+  IMAGE_QUALITY: "medium" as const,
+  /** Output format; webp is far smaller than png for a faded background */
+  OUTPUT_FORMAT: "webp" as const,
+  /** Compression level (0-100) for webp/jpeg output */
+  OUTPUT_COMPRESSION: 80,
   /** Whether background image generation is enabled */
   ENABLED: true,
   /** Blur placeholder dimensions */
@@ -136,7 +143,6 @@ export const ALLOWED_DECORATIVE_CSS_PROPERTIES = [
   "box-shadow",
   "text-shadow",
   "border",
-  "filter",
 ] as const
 
 // ============================================================================

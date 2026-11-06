@@ -9,7 +9,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "seed-themes": "tsx scripts/seed-themes.ts"
+    "seed-themes": "tsx scripts/seed-themes.ts",
+    "backfill-backgrounds": "tsx --env-file=.env scripts/backfill-backgrounds.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",

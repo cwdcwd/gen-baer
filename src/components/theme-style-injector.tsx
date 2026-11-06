@@ -9,6 +9,10 @@ function googleFontUrl(families: string[]): string {
 }
 
 function sanitizeCSS(css: string): string {
+  // Applied to <body>. filter / backdrop-filter / opacity are deliberately
+  // excluded: on <body> they create a containing block, so the
+  // position:fixed background layer scrolls with the page instead of staying
+  // pinned to the viewport. Themes already stored in Redis may contain them.
   const allowedProperties = [
     "background",
     "background-image",
@@ -22,9 +26,6 @@ function sanitizeCSS(css: string): string {
     "border-color",
     "border-style",
     "border-width",
-    "filter",
-    "backdrop-filter",
-    "opacity",
   ]
 
   let sanitized = css
@@ -158,17 +159,19 @@ export function ThemeStyleInjector({ theme }: { theme: GeneratedTheme }) {
     }
     
     .theme-bg-image.loaded {
-      opacity: 0.4;
+      opacity: 0.55;
     }
-    
+
+    /* color-mix works with any CSS color (3/6/8-digit hex, rgb(), named),
+       unlike appending an alpha suffix to a hex string. */
     .theme-bg-overlay {
       position: absolute;
       inset: 0;
       background: linear-gradient(
         to bottom,
-        ${theme.colors.background}dd 0%,
-        ${theme.colors.background}aa 40%,
-        ${theme.colors.background}66 100%
+        color-mix(in srgb, var(--theme-bg) 70%, transparent) 0%,
+        color-mix(in srgb, var(--theme-bg) 50%, transparent) 40%,
+        color-mix(in srgb, var(--theme-bg) 25%, transparent) 100%
       );
     }
     

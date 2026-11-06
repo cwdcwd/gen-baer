@@ -62,7 +62,12 @@ export async function clearBooksCache(): Promise<void> {
 }
 
 export async function clearThemesCache(): Promise<void> {
-  await redis.del(REDIS_KEYS.AVAILABLE_THEMES)
+  // Delete each theme:{slug} key as well as the index set. Deleting only the
+  // set left orphaned theme keys that were still reachable via the
+  // selected-theme cookie but invisible everywhere else.
+  const slugs = await getAvailableThemes()
+  const keys = slugs.map((slug) => `${REDIS_KEYS.THEME_PREFIX}${slug}`)
+  await redis.del(REDIS_KEYS.AVAILABLE_THEMES, ...keys)
 }
 
 export async function deleteTheme(slug: string): Promise<void> {

@@ -138,7 +138,8 @@ Only these properties are allowed for security:
 - `box-shadow`
 - `text-shadow`
 - `border`
-- `filter`
+
+`filter`, `backdrop-filter` and `opacity` are not allowed: the decorative CSS is applied to `<body>`, and those properties make the fixed background layer scroll with the page.
 
 #### Animation Style
 
@@ -152,24 +153,24 @@ Three animation modes:
 Each theme can have an AI-generated background image:
 
 **How it works:**
-1. The AI generates a DALL-E prompt describing the perfect background for the theme
-2. DALL-E 3 creates a unique image matching that aesthetic
+1. The AI generates an image prompt describing the perfect background for the theme
+2. OpenAI `gpt-image-2` creates a unique image matching that aesthetic (returned as base64, saved as WebP)
 3. The image is stored in Vercel Blob for fast CDN delivery
 4. An SVG pattern is also generated as an instant-loading fallback
 
 **Display layers (back to front):**
 1. **Solid color**: Theme's background color
 2. **SVG pattern**: Subtle geometric pattern using theme colors (instant load)
-3. **AI image**: Full background image at 15% opacity (lazy loads with fade)
-4. **Gradient overlay**: Ensures text readability
+3. **AI image**: Full background image at 55% opacity (lazy loads with fade)
+4. **Gradient overlay**: Theme background colour at 70% (top) fading to 25% (bottom), for readability
 
 **Configuration:**
 - Requires `BLOB_READ_WRITE_TOKEN` environment variable
 - Falls back gracefully to SVG patterns if not configured
-- Image generation adds ~10-15 seconds to theme creation time
+- Image generation adds ~30 seconds to theme creation time
 
 **Cost:**
-- DALL-E 3 (1792x1024): ~$0.04/image
+- gpt-image-2, medium, 1536x1024: see current OpenAI image pricing
 - Storage: Vercel Blob free tier (1GB)
 
 ### 3. Copy Transformation
@@ -294,12 +295,12 @@ export const themeSchema = z.object({
   backgroundImagePrompt: z.string(),
 })
 
-// Background image data (added after DALL-E generation)
+// Background image data (added after image generation)
 export const backgroundImageSchema = z.object({
   url: z.string(),           // Vercel Blob URL or SVG data URL
   blurDataUrl: z.string(),   // Tiny blur placeholder
   svgPattern: z.string(),    // SVG pattern fallback
-  prompt: z.string(),        // The DALL-E prompt used
+  prompt: z.string(),        // The image prompt used
   generatedAt: z.string(),   // ISO timestamp
 }).nullable()
 ```
@@ -466,3 +467,19 @@ const themeSchema = z.object({
 ```
 
 4. **Update fallback theme** with default values
+
+### Backfilling missing background images
+
+If image generation fails, the theme is still saved with only the SVG pattern, and it is never retried. To generate images for stored themes that lack one:
+
+```bash
+pnpm backfill-backgrounds                      # dry run: list themes missing an image
+pnpm backfill-backgrounds --apply --limit 1    # try one first
+pnpm backfill-backgrounds --apply              # all remaining (paid OpenAI calls)
+```
+
+The script uses `.env` and writes to Redis and Vercel Blob directly, so `.env` must hold the production `KV_REST_API_*`, `OPENAI_API_KEY` and `BLOB_READ_WRITE_TOKEN` values (`vercel env pull`).
+
+### Previewing a theme
+
+Append `?theme=<slug>` to the URL to render a stored theme without changing your saved selection.

@@ -1,7 +1,7 @@
 /**
  * Background Image Generation Service
  * 
- * Generates AI background images using DALL-E and creates SVG fallback patterns.
+ * Generates AI background images using the OpenAI image API and creates SVG fallback patterns.
  * Images are stored in Vercel Blob for fast CDN delivery.
  */
 
@@ -80,41 +80,43 @@ function generateBlurPlaceholder(): string {
 }
 
 /**
- * Generate background image using DALL-E
+ * Generate background image with the OpenAI image model.
+ * gpt-image-* models return base64 data, not a URL.
  */
-async function generateDalleImage(prompt: string): Promise<string> {
-  console.log("[ImageGen] Generating DALL-E image...")
-  
+async function generateAiImage(prompt: string): Promise<Buffer> {
+  console.log(`[ImageGen] Generating image with ${IMAGE_CONFIG.IMAGE_MODEL}...`)
+
   const response = await openai.images.generate({
-    model: IMAGE_CONFIG.DALLE_MODEL,
+    model: IMAGE_CONFIG.IMAGE_MODEL,
     prompt: `${prompt}. Style: suitable as a website background, subtle and not too busy, cohesive color palette, professional quality.`,
     n: 1,
     size: IMAGE_CONFIG.IMAGE_SIZE,
     quality: IMAGE_CONFIG.IMAGE_QUALITY,
+    output_format: IMAGE_CONFIG.OUTPUT_FORMAT,
+    output_compression: IMAGE_CONFIG.OUTPUT_COMPRESSION,
   })
 
-  const imageUrl = response.data?.[0]?.url
-  if (!imageUrl) {
-    throw new Error("No image URL returned from DALL-E")
+  const b64 = response.data?.[0]?.b64_json
+  if (!b64) {
+    throw new Error("No image data returned from image model")
   }
 
-  return imageUrl
+  const buffer = Buffer.from(b64, "base64")
+  if (buffer.length === 0) {
+    throw new Error("Image model returned empty image data")
+  }
+  return buffer
 }
 
 /**
  * Upload image to Vercel Blob
  */
-async function uploadToBlob(imageUrl: string, filename: string): Promise<string> {
+async function uploadToBlob(image: Buffer, filename: string): Promise<string> {
   console.log("[ImageGen] Uploading to Vercel Blob...")
-  
-  // Fetch the image from DALL-E's temporary URL
-  const response = await fetch(imageUrl)
-  const imageBuffer = await response.arrayBuffer()
-  
-  // Upload to Vercel Blob
-  const blob = await put(filename, imageBuffer, {
+
+  const blob = await put(filename, image, {
     access: "public",
-    contentType: "image/png",
+    contentType: `image/${IMAGE_CONFIG.OUTPUT_FORMAT}`,
   })
 
   return blob.url
@@ -143,12 +145,12 @@ export async function generateBackgroundImage(
   }
 
   try {
-    // Generate DALL-E image
-    const dalleUrl = await generateDalleImage(theme.backgroundImagePrompt)
-    
+    // Generate image
+    const image = await generateAiImage(theme.backgroundImagePrompt)
+
     // Upload to Vercel Blob for permanent storage
-    const filename = `backgrounds/${theme.themeSlug}-${Date.now()}.png`
-    const blobUrl = await uploadToBlob(dalleUrl, filename)
+    const filename = `backgrounds/${theme.themeSlug}-${Date.now()}.${IMAGE_CONFIG.OUTPUT_FORMAT}`
+    const blobUrl = await uploadToBlob(image, filename)
     
     // Generate blur placeholder
     const blurDataUrl = generateBlurPlaceholder()

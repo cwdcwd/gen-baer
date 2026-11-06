@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "vercel-genbaer": {
+      "type": "http",
+      "url": "https://mcp.vercel.com/cwdcwds-projects/lazybaer-genbaer"
+    }
+  }
+}
