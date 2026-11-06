@@ -36,13 +36,13 @@ I'm a long-time lover of microcontrollers and hobby electronics, working with Ar
     {
       name: "Eggbook",
       description: "A marketplace app for local egg sellers: profile pages, listings with photos and pricing, buyer messaging and order requests, and payments through Stripe Connect.",
-      url: "https://eggbook.vercel.app/",
+      url: "https://www.eggbook.me/",
       tags: ["Marketplace", "Next.js", "Stripe"],
     },
     {
       name: "Iketrix",
       description: "An LLM-powered Eisenhower Matrix that sorts your tasks by urgency and importance, with an AI agent that can research and take on the ones worth delegating.",
-      url: "https://iketrix.vercel.app/",
+      url: "iketrix.lazybaer.com",
       tags: ["AI", "Productivity", "Next.js"],
     },
     {
